@@ -1,0 +1,163 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Student {
+  id              Int      @id @default(autoincrement())
+  updatedAt       DateTime @updatedAt
+  createdAt       DateTime @default(now())
+
+  // Clerk user authentication integration
+  clerkUserId     String   @unique
+
+  // Basic student information
+  studentID       String   @unique
+  currentSemester String   @default("Semester 1")
+  section         String   @default("A")
+  yearOfAdmission String   @default("2021")
+
+  // Relations
+  studentDetails  StudentDetails? @relation(fields: [studentDetailsId], references: [id])
+  studentDetailsId Int?            @unique
+
+  localGuardian   GuardianDetails?  @relation(fields: [localGuardianId], references: [id])
+  localGuardianId Int?            @unique
+
+  // Added relations for other models
+  academicDetails AcademicDetails[]
+  hobbyDetails    HobbyDetails[]
+  technicalInterests TechnicalInterestDetails[]
+  siblingDetails  SiblingDetails[]
+  hostleDetails   HostleDetails[]
+  scholarshipDetails ScholarshipDetails[]
+  studentProfile  StudentProfile?
+}
+
+model GuardianDetails {
+  id                   Int      @id @default(autoincrement())
+
+  // Father's information
+  fatherName           String
+  fatherOccupation     String?
+  fatherQualification  String?
+  fatherContact        String
+
+  // Mother's information
+  motherName           String
+  motherOccupation     String?
+  motherQualification  String?
+  motherContact        String
+
+  // Relation back to Student
+  student              Student?
+}
+
+model StudentDetails {
+  id               Int       @id @default(autoincrement())
+
+  // Personal Identification
+  aadharNo         String    @unique
+  dob              DateTime
+  bloodGroup       String
+
+  // Address Information
+  addressOnAadhar  String
+  permanentAddress String?
+
+  // Demographic Information
+  casteCategory    String
+  subcaste         String?
+  religion         String
+
+  // Relation back to Student
+  student          Student?
+}
+
+model HobbyDetails {
+  id        Int    @id @default(autoincrement())
+  hobby     String @db.VarChar(255)
+
+  // Relation to Student
+  student   Student @relation(fields: [studentId], references: [id])
+  studentId Int
+}
+
+model StudentProfile {
+  id        Int    @id @default(autoincrement())
+  name      String
+  email     String @unique
+  phone     String
+  location  String
+
+  // Relation to Student
+  student   Student @relation(fields: [studentId], references: [id])
+  studentId Int     @unique
+}
+
+model TechnicalInterestDetails {
+  id       Int    @id @default(autoincrement())
+  interest String @db.VarChar(255)
+
+  // Relation to Student
+  student   Student @relation(fields: [studentId], references: [id])
+  studentId Int
+}
+
+model SiblingDetails {
+  id                     Int    @id @default(autoincrement())
+  name                   String
+  age                    Int
+  aadharNo               String @db.VarChar(14)
+  occupation             String
+  organizationAddress    String
+
+  // Relation to Student
+  student                Student @relation(fields: [studentId], references: [id])
+  studentId              Int
+}
+
+model AcademicDetails {
+  id          String  @id @default(cuid())
+  label       String
+  year        String
+  totalMarks  Int
+  outOfMarks  Int
+  percentage  String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relation to Student
+  student     Student @relation(fields: [studentId], references: [id])
+  studentId   Int
+}
+
+model HostleDetails {
+  id               Int      @id @default(autoincrement())
+  academicYear     String
+  roomDetails      String
+  partnerDetails   String
+  transportation   String
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  // Relation to Student
+  student          Student @relation(fields: [studentId], references: [id])
+  studentId        Int
+}
+
+model ScholarshipDetails {
+  id           Int    @id @default(autoincrement())
+  academicYear String
+  type         String
+  criteria     String
+  amount       String
+
+  // Relation to Student
+  student      Student @relation(fields: [studentId], references: [id])
+  studentId    Int
+}
