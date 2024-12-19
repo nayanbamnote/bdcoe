@@ -25,7 +25,7 @@ export interface AreaItem {
 interface DynamicDetailsProps {
   title: string;
   icon?: React.ReactNode;
-  area: AreaItem[][];
+  area: AreaItem[][] | null;
   onEdit: () => void;
 }
 
@@ -41,39 +41,47 @@ const FieldGroup: React.FC<FieldGroupProps> = ({ fields, className = "gap-6" }) 
     </div>
   );
 };
-
+ 
 const DynamicDetails: React.FC<DynamicDetailsProps> = ({ 
   title, 
   area, 
-  icon = <Pencil />,
+  icon = <Pencil />, 
   onEdit 
 }) => {
   return (
     <div className="flex">
       <div className="pr-[85px] pt-5 w-[200px] shrink-0">{title}</div>
       <div className="flex flex-col gap-3 w-full">
-      {area.map((fieldGroups, index)=>(
-        <div key={index} className="w-full flex justify-between border border-solid p-5 border-grayee rounded-lg">
-        <div className="flex flex-col gap-3">
-          {fieldGroups.map((group, groupIndex) => (
-            <FieldGroup 
-              key={groupIndex} 
-              fields={group.fields}
-              className={group.className}
-            />
-          ))}
-        </div>
-        {onEdit && (
-          <button 
-            onClick={onEdit} 
-            className="bg-transparent border-none cursor-pointer"
-          >
-            {icon}
+        {area && area.length > 0 ? (
+          area.map((fieldGroups, index) => (
+            <div
+              key={index}
+              className="w-full flex justify-between border border-solid p-5 border-grayee rounded-lg"
+            >
+              <div className="flex flex-col gap-3">
+                {fieldGroups.map((group, groupIndex) => (
+                  <FieldGroup 
+                    key={groupIndex} 
+                    fields={group.fields} 
+                    className={group.className} 
+                  />
+                ))}
+              </div>
+              {onEdit && (
+                <button 
+                  onClick={onEdit} 
+                  className="bg-transparent border-none cursor-pointer"
+                >
+                  {icon}
+                </button>
+              )}
+            </div>
+          ))
+        ) : (
+          <button onClick={onEdit} className="text-gray-500 italic cursor-pointer">
+            + Fill up the {title}
           </button>
         )}
-      </div>
-      ))
-      }
       </div>
     </div>
   );

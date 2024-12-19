@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import DynamicDetails, { AreaItem } from "./DynamicDetail";
 import DynamicDialog from "../DialogComponents/DynamicDialog";
 import { z } from "zod";
+import { saveDetails } from "@/utils/saveDetails";
 
 const HobbyExtracurricular: React.FC = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -10,21 +11,25 @@ const HobbyExtracurricular: React.FC = () => {
       {
         fields: [
           { 
-            label: "Hobby/Activity", 
-            value: "Chess", 
-            validation: z.string().min(1, "Hobby/activity cannot be empty.") 
+            label: "Hobbies/Activities (comma-separated)", 
+            value: "Chess, Hockey", 
+            validation: z.string().min(1, "Hobbies cannot be empty.") 
           }
         ]
       }
     ]
   ]);
 
-  const handleEdit = () => {
+  const handleEdit = () => { 
     setIsDialogOpen(true);
   };
 
-  const handleSave = (updatedArea: AreaItem[][]) => {
-    setArea(updatedArea);
+  const formatHobbyExtracurricularPayload = (updatedArea: AreaItem[][]) => ({
+    hobbies: updatedArea[0][0].fields[0].value,
+  });
+
+  const handleSave = async (updatedArea: AreaItem[][]) => {
+    saveDetails(updatedArea, "/api/hobbyDetails", formatHobbyExtracurricularPayload, setArea);
   };
 
   return (

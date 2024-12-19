@@ -7,6 +7,7 @@ import "@/css/font-awesome.min.css";
 import "@/css/meanmenu.css";
 import "@/css/one.css";
 import "@/css/style.css";
+import { SignedIn, UserButton, SignedOut } from "@clerk/nextjs";
 
 const Header = () => {
   return (
@@ -19,9 +20,9 @@ const Header = () => {
                 <div className="navbar-header">
                   <a className="navbar-brand" href="/">
                     <img
-                      src="images/logo-one.png"
-                      className="logo-change"
-                      alt="College Education"
+                      src="images/bd-logo2.png"
+                      className="logo-change max-w-[330px]"
+                      alt="BDCOE"
                     />
                   </a>{" "}
                 </div>
@@ -33,14 +34,19 @@ const Header = () => {
                     <li className="active">
                       <a href="/">Home</a>
                     </li>
-                    <li>
-                      {" "}
-                      <Link href="/sign-in" className="dropdown-toggle">
-                        Login{" "}
-                      </Link>
-                    </li>
+                    
                     <li>
                       <a href="/profile">Profile</a>
+                    </li>
+                    <li>
+                      <SignedIn>
+                        <div className=" p-1 bg-slate-400 rounded-lg transform scale-150 flex justify-center items-center">
+                        <UserButton />
+                        </div>
+                      </SignedIn>
+                      <SignedOut>
+                        <Link href="/sign-in">Login</Link>
+                      </SignedOut>
                     </li>
                   </ul>
                 </div>

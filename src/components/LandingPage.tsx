@@ -1,16 +1,31 @@
+"use client";
 import React from "react";
+import { useInView } from "react-intersection-observer";
+import CountUp from "react-countup";
 import MaxWidthWrapper from "./MaxWidthWrapper";
-import '@/css/animate.css'
-import '@/css/bootstrap.min.css'
-import '@/css/font-awesome.min.css'
-import '@/css/meanmenu.css'
-import '@/css/one.css'
-import '@/css/style.css'
+import "@/css/animate.css";
+import "@/css/bootstrap.min.css";
+import "@/css/font-awesome.min.css";
+import "@/css/meanmenu.css";
+import "@/css/one.css";
+import "@/css/style.css";
 import Header from "./LandingPageComponent/Header";
 import Footer from "./LandingPageComponent/Footer";
+import VisionMission from "./LandingPageComponent/VisionMission";
+import { Clapperboard, Handshake, MonitorCog } from "lucide-react";
 
+const stats = [
+  { number: 10, label: "Teachers" },
+  { number: 3, label: "Courses" },
+  { number: 350, label: "Students" },
+  { number: 361, label: "Recruited" },
+];
 
 const LandingPage = () => {
+  const { ref, inView } = useInView({
+    triggerOnce: true, // Ensures the animation triggers only once
+    threshold: 1, // Start the animation when 50% of the component is visible
+  });
   return (
     <section>
       {/* <!-- Pre Loader --> */}
@@ -23,58 +38,42 @@ const LandingPage = () => {
           className="carousel fade-carousel slide"
           data-ride="carousel"
           data-interval="4000"
-          id="bs-carousel">
+          id="bs-carousel"
+        >
           {/* <!-- Overlay --> */}
           <div className="overlay"></div>
-          {/* <!-- Indicators --> */}
-          <ol className="carousel-indicators">
-            <li
-              data-target="#bs-carousel"
-              data-slide-to="0"
-              className="active"></li>
-            <li data-target="#bs-carousel" data-slide-to="1"></li>
-            <li data-target="#bs-carousel" data-slide-to="2"></li>
-          </ol>
           {/* <!-- Wrapper for slides --> */}
           <div className="carousel-inner">
             <div className="item slides active">
-              <div className="slide-1">
-                <img src="images/banner.jpg" alt="" />
+              <div className="slide-1 max-h-[650px] ">
+                <img
+                  src="images/bdcoe_i.jpeg"
+                  alt=""
+                  className="object-cover object-top"
+                />
               </div>
               <div className="hero">
-                <h1 className="animated1 whitespace-nowrap">College Education</h1>
-                <h3 className="animated2">Multipurpose Responsive Template</h3>
-              </div>
-            </div>
-            <div className="item slides">
-              <div className="slide-2">
-                <img src="images/banner1.jpg" alt="" />
-              </div>
-              <div className="hero">
-                <h1 className="animated1">College Education</h1>
-                <h3 className="animated2">Multipurpose Responsive Template</h3>
-              </div>
-            </div>
-            <div className="item slides">
-              <div className="slide-3">
-                <img src="images/banner2.jpg" alt="" />
-              </div>
-              <div className="hero">
-                <h1 className="animated1">College Education</h1>
-                <h3 className="animated2">Multipurpose Responsive Template</h3>
+                <h1 className="animated1 whitespace-nowrap">
+                  Computer Department{" "}
+                </h1>
+                <h3 className="animated2">
+                  Excellence, Innovation, and Success
+                </h3>
               </div>
             </div>
           </div>
           <a
             className="left carousel-control"
             href="#bs-carousel"
-            data-slide="prev">
+            data-slide="prev"
+          >
             <span className="transition3s glyphicon glyphicon-chevron-left fa fa-angle-left"></span>
           </a>{" "}
           <a
             className="right carousel-control"
             href="#bs-carousel"
-            data-slide="next">
+            data-slide="next"
+          >
             <span className="transition3s glyphicon glyphicon-chevron-right fa fa-angle-right"></span>
           </a>{" "}
         </div>
@@ -89,13 +88,15 @@ const LandingPage = () => {
           <div className="row">
             <div className="title">
               <h2>
-                Welcome to <span>College Education</span>
+                Welcome to <span>BDCOE Computer Department</span>
               </h2>
               <p>
-                Lorem Ipsum is simply dummy text of the printing and typesetting
-                industry
+                Empowering innovation, fostering brilliance, and shaping
+                tomorrow's tech-driven future.
               </p>
             </div>
+
+          < VisionMission />
             <div className="col-sm-6 col-md-4">
               <div className="callouts">
                 <div className="callouts-box text-center">
@@ -108,8 +109,11 @@ const LandingPage = () => {
                   <div className="divider bg-primary"></div>
                   <div className="box-body">
                     <p>
-                      Lorem ipsum dolor sit amet, consectetur adipisicing elit,
-                      sed do eiusmod tempor incididunt ut labore et
+                      The Computer Department offers{" "}
+                      <span className="text-blue-400">B.Tech, M.Tech,</span> and{" "}
+                      <span className="text-blue-400">MBA</span> programs,
+                      blending innovation, technical expertise, creative
+                      problem-solving, and managerial skills for future leaders.
                     </p>
                   </div>
                 </div>
@@ -127,8 +131,9 @@ const LandingPage = () => {
                   <div className="divider bg-primary"></div>
                   <div className="box-body">
                     <p>
-                      Lorem ipsum dolor sit amet, consectetur adipisicing elit,
-                      sed do eiusmod tempor incididunt ut labore et
+                      The Computer Department boasts qualified teachers,
+                      fostering innovation, technical expertise, and leadership
+                      excellence in B.Tech, M.Tech, and MBA programs.
                     </p>
                   </div>
                 </div>
@@ -137,17 +142,47 @@ const LandingPage = () => {
             <div className="col-sm-6 col-md-4">
               <div className="callouts">
                 <div className="callouts-box text-center">
-                  <div className="icon-box">
-                    <i className="fa fa-android" aria-hidden="true"></i>
+                  <div
+                    className="icon-box"
+                    style={{ width: "30px", height: "30px", color: "#3eb2ce" }}
+                  >
+                    <MonitorCog style={{ width: "100%", height: "100%" }} />
                   </div>
                   <div className="box-header">
-                    <h3>App Development</h3>
+                    <h3>Computer Labs </h3>
                   </div>
                   <div className="divider bg-primary"></div>
                   <div className="box-body">
                     <p>
-                      Lorem ipsum dolor sit amet, consectetur adipisicing elit,
-                      sed do eiusmod tempor incididunt ut labore et
+                      The Computer Department is equipped with state-of-the-art,
+                      cutting-edge labs that foster creativity, enhance
+                      technical expertise, and cultivate leadership, innovation,
+                      and problem-solving skills.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="col-sm-6 col-md-4">
+              <div className="callouts">
+                <div className="callouts-box text-center">
+                  <div
+                    className="icon-box"
+                    style={{ width: "30px", height: "30px", color: "#3eb2ce" }}
+                  >
+                    <Handshake style={{ width: "100%", height: "100%" }} />
+                  </div>
+                  <div className="box-header">
+                    <h3>Training & Placements</h3>
+                  </div>
+                  <div className="divider bg-primary"></div>
+                  <div className="box-body">
+                    <p>
+                      Our college offers dynamic training and placement programs
+                      to enhance students' overall personality, interview
+                      skills, professional growth, confidence, and career
+                      prospects.
                     </p>
                   </div>
                 </div>
@@ -156,41 +191,28 @@ const LandingPage = () => {
             <div className="col-sm-6 col-md-4">
               <div className="callouts">
                 <div className="callouts-box text-center">
-                  <div className="icon-box">
-                    <i className="fa fa-globe" aria-hidden="true"></i>
+                  <div
+                    className="icon-box"
+                    style={{ width: "30px", height: "30px", color: "#3eb2ce" }}
+                  >
+                    <Clapperboard style={{ width: "100%", height: "100%" }} />
                   </div>
                   <div className="box-header">
-                    <h3>Online classNamees</h3>
+                    <h3>Events & Fest</h3>
                   </div>
                   <div className="divider bg-primary"></div>
                   <div className="box-body">
                     <p>
-                      Lorem ipsum dolor sit amet, consectetur adipisicing elit,
-                      sed do eiusmod tempor incididunt ut labore et
+                      Our college organizes vibrant events like ARAMBH, LAMHE,
+                      COLOURS Dance, Wheelspeen, Hackathon, Robo Race, and
+                      traditional festivals like Ganapati Pratishthan and
+                      Shivjayanti.
                     </p>
                   </div>
                 </div>
               </div>
             </div>
-            <div className="col-sm-6 col-md-4">
-              <div className="callouts">
-                <div className="callouts-box text-center">
-                  <div className="icon-box">
-                    <i className="fa fa-truck" aria-hidden="true"></i>
-                  </div>
-                  <div className="box-header">
-                    <h3>Transportation</h3>
-                  </div>
-                  <div className="divider bg-primary"></div>
-                  <div className="box-body">
-                    <p>
-                      Lorem ipsum dolor sit amet, consectetur adipisicing elit,
-                      sed do eiusmod tempor incididunt ut labore et
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
+
             <div className="col-sm-6 col-md-4">
               <div className="callouts">
                 <div className="callouts-box text-center">
@@ -198,13 +220,14 @@ const LandingPage = () => {
                     <i className="fa fa-users" aria-hidden="true"></i>
                   </div>
                   <div className="box-header">
-                    <h3>Customer Support</h3>
+                    <h3>Personal Mentor </h3>
                   </div>
                   <div className="divider bg-primary"></div>
                   <div className="box-body">
                     <p>
-                      Lorem ipsum dolor sit amet, consectetur adipisicing elit,
-                      sed do eiusmod tempor incididunt ut labore et
+                      The college provides personal mentors to guide students in
+                      solving academic challenges and addressing personal issues
+                      for overall growth.
                     </p>
                   </div>
                 </div>
@@ -224,8 +247,8 @@ const LandingPage = () => {
             <div className="aboutus-box">
               <div className="col-sm-4 aboutus-box-image">
                 <img
-                  src="images/about-person.jpg"
-                  className="img-responsive"
+                  src="images/default.png"
+                  className="img-responsive max-h-[326px]"
                   alt=""
                 />
               </div>
@@ -233,22 +256,21 @@ const LandingPage = () => {
                 <div className="aboutus-box-body-content">
                   <h3>About Us</h3>
                   <p>
-                    Lorem ipsum dolor sit amet, consectetur adipisicing elit,
-                    sed do eiusmod tempor incididunt ut labore et sed do eiusmod
-                    tempor incididunt ut labore etsed do eiusmod tempor
-                    incididunt ut labore etsed do eiusmod tempor incididunt ut
-                    labore et sed do eiusmod tempor incididunt ut labore et.
+                    Our college envisions fostering innovation, excellence, and
+                    leadership. Its mission is to empower students through
+                    quality education and technical skills, guided by core
+                    values of integrity, collaboration, and lifelong learning.
                   </p>
                   <div className="special-text">
                     {" "}
-                    <cite>- Les Williams,</cite>
-                    <small>CEO at College Education</small>{" "}
+                    <cite>- Dr. S.W. Mohod,</cite>
+                    <small>HOD of Computer Engineering</small>{" "}
                   </div>
                 </div>
                 <div className="about-btn">
                   {" "}
                   <a href="#" className="btn">
-                    Book A Appointment
+                    Register
                   </a>{" "}
                 </div>
               </div>
@@ -257,7 +279,8 @@ const LandingPage = () => {
         </div>
         <div
           style={{ backgroundImage: "url('/images/home-1.jpg')" }}
-          className="about-bg bg-image"></div>
+          className="about-bg bg-image"
+        ></div>
       </div>
 
       {/* <!-- About us wrapper End -->  */}
@@ -269,39 +292,39 @@ const LandingPage = () => {
           <div className="row">
             <div className="title">
               <h2>
-                Expert <span>Team</span>
+                Expert <span>Faculty</span>
               </h2>
               <p>
-                Lorem Ipsum is simply dummy text of the printing and typesetting
-                industry
+                Our faculty combines expertise and passion to inspire young
+                minds.
               </p>
             </div>
             <div className="col-sm-6 col-md-3">
               <div className="team-wrap">
                 <div className="thumbnail thumbnail-model">
                   <figure className="thumbnail-image">
-                    <img src="images/team1.jpg" alt="" />{" "}
+                    <img src="images/harshal.jpg" alt="" />{" "}
                   </figure>
                   <div className="thumbnail-inner">
                     <div className="link-group">
                       <i className="fa fa-phone"></i>
                       <a href="#" className="link-white">
-                        +1 (123) 456 7890
+                        +91 8623094369
                       </a>
                     </div>
                     <div className="link-group">
                       <i className="fa fa-envelope"></i>
                       <a href="#" className="link-white">
-                        info@demolink.org
+                        contactsvraut@gmail.com
                       </a>
                     </div>
                   </div>
                   <div className="thumbnail-caption">
                     <p className="text-header">
-                      <a href="#">Anne Kemper</a>
+                      <a href="#">Prof S.V. Raut</a>
                     </p>
                     <div className="divider divider-md bg-teak"></div>
-                    <p className="text-caption">Mraketing Expert</p>
+                    <p className="text-caption">Java Faculty</p>
                   </div>
                 </div>
               </div>
@@ -310,28 +333,28 @@ const LandingPage = () => {
               <div className="team-wrap">
                 <div className="thumbnail thumbnail-model">
                   <figure className="thumbnail-image">
-                    <img src="images/team2.jpg" alt="" />{" "}
+                    <img src="images/harshal.jpg" alt="" />{" "}
                   </figure>
                   <div className="thumbnail-inner">
                     <div className="link-group">
                       <i className="fa fa-phone"></i>
                       <a href="#" className="link-white">
-                        +1 (123) 456 7890
+                        +91 8087736725
                       </a>
                     </div>
                     <div className="link-group">
                       <i className="fa fa-envelope"></i>
                       <a href="#" className="link-white">
-                        info@demolink.org
+                        contactroshanc@gmail.com
                       </a>
                     </div>
                   </div>
                   <div className="thumbnail-caption">
                     <p className="text-header">
-                      <a href="#">Doris Wilson</a>
+                      <a href="#">Prof R. Chaudhari</a>
                     </p>
                     <div className="divider divider-md bg-teak"></div>
-                    <p className="text-caption">Business Expert</p>
+                    <p className="text-caption">AI/ML Expert</p>
                   </div>
                 </div>
               </div>
@@ -340,28 +363,28 @@ const LandingPage = () => {
               <div className="team-wrap">
                 <div className="thumbnail thumbnail-model">
                   <figure className="thumbnail-image">
-                    <img src="images/team3.jpg" alt="" />{" "}
+                    <img src="images/harshal.jpg" alt="" />{" "}
                   </figure>
                   <div className="thumbnail-inner">
                     <div className="link-group">
                       <i className="fa fa-phone"></i>
                       <a href="#" className="link-white">
-                        +1 (123) 456 7890
+                        +91 9503141798
                       </a>
                     </div>
                     <div className="link-group">
                       <i className="fa fa-envelope"></i>
                       <a href="#" className="link-white">
-                        info@demolink.org
+                        contactrmpatil@gmail.com
                       </a>
                     </div>
                   </div>
                   <div className="thumbnail-caption">
                     <p className="text-header">
-                      <a href="#">Amanda Smith</a>
+                      <a href="#">Prof R. M. Patil</a>
                     </p>
                     <div className="divider divider-md bg-teak"></div>
-                    <p className="text-caption">Marketing Expert</p>
+                    <p className="text-caption">Computer Graphics</p>
                   </div>
                 </div>
               </div>
@@ -370,28 +393,28 @@ const LandingPage = () => {
               <div className="team-wrap">
                 <div className="thumbnail thumbnail-model">
                   <figure className="thumbnail-image">
-                    <img src="images/team4.jpg" alt="" />{" "}
+                    <img src="images/harshal.jpg" alt="" />{" "}
                   </figure>
                   <div className="thumbnail-inner">
                     <div className="link-group">
                       <i className="fa fa-phone"></i>
                       <a href="#" className="link-white">
-                        +1 (123) 456 7890
+                        +91 7517697478
                       </a>
                     </div>
                     <div className="link-group">
                       <i className="fa fa-envelope"></i>
                       <a href="#" className="link-white">
-                        info@demolink.org
+                        contactsveer@gmail.com
                       </a>
                     </div>
                   </div>
                   <div className="thumbnail-caption">
                     <p className="text-header">
-                      <a href="#">Amanda Smith</a>
+                      <a href="#">Prof S. Veer</a>
                     </p>
                     <div className="divider divider-md bg-teak"></div>
-                    <p className="text-caption">Business Expert</p>
+                    <p className="text-caption"> Computer Networking</p>
                   </div>
                 </div>
               </div>
@@ -402,6 +425,35 @@ const LandingPage = () => {
 
       {/* <!-- Team Wrapper End -->  */}
 
+      {/* <!-- Satisfied Wrapper start --> */}
+
+      <div
+        ref={ref}
+        className="satisfied-wrapper bg-gray-50 py-12 flex justify-center items-center"
+      >
+        <div className="container mx-auto flex flex-wrap justify-evenly gap-14 text-center">
+          {stats.map((stat, index) => (
+            <div
+              key={index}
+              className="counter flex flex-col justify-center items-center text-center w-40"
+            >
+              <div className="number text-4xl font-bold text-primary">
+                {inView ? (
+                  <CountUp start={0} end={stat.number} duration={2.5} />
+                ) : (
+                  0
+                )}
+              </div>
+              <p className="text-lg font-medium text-gray-600 !mt-[16px]">
+                {stat.label}
+              </p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* <!-- Satisfied Wrapper end  --> */}
+
       {/* <!-- Testimonials Wrapper Start --> */}
 
       <div className="testimonials-wrapper">
@@ -409,7 +461,7 @@ const LandingPage = () => {
           <div className="row">
             <div className="title">
               <h2>
-                Client <span className="!text-[#3eb2ce]">Testimonials</span>
+                CDOS <span className="!text-[#3eb2ce]">Testimonials</span>
               </h2>
               <p>
                 Lorem Ipsum is simply dummy text of the printing and typesetting
@@ -419,23 +471,11 @@ const LandingPage = () => {
             <div
               id="myCarousel1"
               className="carousel slide"
-              data-ride="carousel">
+              data-ride="carousel"
+            >
               {/* <!-- Testimonials Indicators --> */}
 
-              <ol className="carousel-indicators">
-                <li
-                  data-target="#myCarousel1"
-                  data-slide-to="0"
-                  className=""></li>
-                <li
-                  data-target="#myCarousel1"
-                  data-slide-to="1"
-                  className=""></li>
-                <li
-                  data-target="#myCarousel1"
-                  data-slide-to="2"
-                  className="active"></li>
-              </ol>
+      
 
               {/* <!-- Testimonials slides --> */}
 
@@ -444,7 +484,7 @@ const LandingPage = () => {
                   <div className="col-sm-6">
                     <blockquote>
                       {" "}
-                      <img src="images/testimonials1.png" alt="" />
+                      <img src="images/harshal.jpg" alt="" />
                       <p>
                         Lorem Ipsum is simply dummy text of the printing and
                         typesetting industry. Lorem Ipsum has been the
@@ -452,14 +492,14 @@ const LandingPage = () => {
                         when an unknown printer took a galley of type and
                         scrambled it to make a type specimen book.
                       </p>
-                      <h3>- Michal Marek</h3>
-                      <h4>Sales Manager</h4>
+                      <h3>- Abhishekh Chaware </h3>
+                      <h4>CDOS President</h4>
                     </blockquote>
                   </div>
                   <div className="col-sm-6">
                     <blockquote>
                       {" "}
-                      <img src="images/testimonials2.png" alt="" />
+                      <img src="images/harshal.jpg" alt="" />
                       <p>
                         Lorem Ipsum is simply dummy text of the printing and
                         typesetting industry. Lorem Ipsum has been the
@@ -467,8 +507,8 @@ const LandingPage = () => {
                         when an unknown printer took a galley of type and
                         scrambled it to make a type specimen book.
                       </p>
-                      <h3>- Michal Marek</h3>
-                      <h4>Sales Manager</h4>
+                      <h3>- Ridhhi Watkar</h3>
+                      <h4>CDOS Vice-President</h4>
                     </blockquote>
                   </div>
                 </div>
@@ -476,7 +516,7 @@ const LandingPage = () => {
                   <div className="col-sm-6">
                     <blockquote>
                       {" "}
-                      <img src="images/testimonials3.png" alt="" />
+                      <img src="images/testimon.png" alt="" />
                       <p>
                         Lorem Ipsum is simply dummy text of the printing and
                         typesetting industry. Lorem Ipsum has been the
@@ -554,8 +594,8 @@ const LandingPage = () => {
                 Popular <span>Courses</span>
               </h2>
               <p>
-                Lorem Ipsum is simply dummy text of the printing and typesetting
-                industry
+                Empowering futures with cutting-edge B.Tech, M.Tech, and MBA
+                programs.
               </p>
             </div>
           </div>
@@ -570,39 +610,17 @@ const LandingPage = () => {
                 </div>
                 <div className="single-item-text">
                   <h4>
-                    <a href="#">Photoshop CC 2016</a>
+                    <a href="#">B.Tech</a>
                   </h4>
-                  <div className="single-item-text-info">
-                    {" "}
-                    <span>
-                      By: <span>L Williams</span>
-                    </span>{" "}
-                    <span>
-                      Date: <span>20.5.15</span>
-                    </span>{" "}
-                  </div>
+                  <div className="single-item-text-info"> </div>
                   <p>
-                    Lorem Ipsum is simply dummy text of the printing and
-                    typesetting industry. Lorem Ipsum has been the industry's
-                    standard dummy text ever since.
+                    B.Tech course provides in-depth knowledge in engineering,
+                    combining theory and practical skills to prepare students
+                    for the tech industry.
                   </p>
                   <div className="single-item-content">
-                    <div className="single-item-comment-view">
-                      {" "}
-                      <span>
-                        <i className="fa fa-eye"></i>259
-                      </span>{" "}
-                      <span>
-                        <i className="fa fa-comment-o"></i>19
-                      </span>{" "}
-                    </div>
-                    <div className="single-item-rating">
-                      {" "}
-                      <i className="fa fa-star" aria-hidden="true"></i>
-                      <i className="fa fa-star" aria-hidden="true"></i>
-                      <i className="fa fa-star" aria-hidden="true"></i>
-                      <i className="fa fa-star" aria-hidden="true"></i>{" "}
-                    </div>
+                    <div className="single-item-comment-view"> </div>
+                    <div className="single-item-rating"> </div>
                   </div>
                 </div>
                 <div className="button-bottom">
@@ -623,39 +641,16 @@ const LandingPage = () => {
                 </div>
                 <div className="single-item-text">
                   <h4>
-                    <a href="#">Photoshop CC 2016</a>
+                    <a href="#">M.Tech</a>
                   </h4>
-                  <div className="single-item-text-info">
-                    {" "}
-                    <span>
-                      By: <span>L Williams</span>
-                    </span>{" "}
-                    <span>
-                      Date: <span>20.5.15</span>
-                    </span>{" "}
-                  </div>
+                  <div className="single-item-text-info"> </div>
                   <p>
-                    Lorem Ipsum is simply dummy text of the printing and
-                    typesetting industry. Lorem Ipsum has been the industry's
-                    standard dummy text ever since.
+                    MTech course offers advanced knowledge in engineering,
+                    focusing on research, innovation, and specialized skills to
+                    excel in technology fields.
                   </p>
                   <div className="single-item-content">
-                    <div className="single-item-comment-view">
-                      {" "}
-                      <span>
-                        <i className="fa fa-eye"></i>259
-                      </span>{" "}
-                      <span>
-                        <i className="fa fa-comment-o"></i>19
-                      </span>{" "}
-                    </div>
-                    <div className="single-item-rating">
-                      {" "}
-                      <i className="fa fa-star" aria-hidden="true"></i>
-                      <i className="fa fa-star" aria-hidden="true"></i>
-                      <i className="fa fa-star" aria-hidden="true"></i>
-                      <i className="fa fa-star" aria-hidden="true"></i>{" "}
-                    </div>
+                    <div className="single-item-comment-view"> </div>
                   </div>
                 </div>
                 <div className="button-bottom">
@@ -676,39 +671,16 @@ const LandingPage = () => {
                 </div>
                 <div className="single-item-text">
                   <h4>
-                    <a href="#">Photoshop CC 2016</a>
+                    <a href="#">MBA</a>
                   </h4>
-                  <div className="single-item-text-info">
-                    {" "}
-                    <span>
-                      By: <span>L Williams</span>
-                    </span>{" "}
-                    <span>
-                      Date: <span>20.5.15</span>
-                    </span>{" "}
-                  </div>
+                  <div className="single-item-text-info"> </div>
                   <p>
-                    Lorem Ipsum is simply dummy text of the printing and
-                    typesetting industry. Lorem Ipsum has been the industry's
-                    standard dummy text ever since.
+                    MBA course provides comprehensive management education,
+                    focusing on leadership, strategy, and business skills to
+                    excel in the corporate world
                   </p>
                   <div className="single-item-content">
-                    <div className="single-item-comment-view">
-                      {" "}
-                      <span>
-                        <i className="fa fa-eye"></i>259
-                      </span>{" "}
-                      <span>
-                        <i className="fa fa-comment-o"></i>19
-                      </span>{" "}
-                    </div>
-                    <div className="single-item-rating">
-                      {" "}
-                      <i className="fa fa-star" aria-hidden="true"></i>
-                      <i className="fa fa-star" aria-hidden="true"></i>
-                      <i className="fa fa-star" aria-hidden="true"></i>
-                      <i className="fa fa-star" aria-hidden="true"></i>{" "}
-                    </div>
+                    <div className="single-item-comment-view"> </div>
                   </div>
                 </div>
                 <div className="button-bottom">
@@ -726,7 +698,7 @@ const LandingPage = () => {
       {/* <!-- Courses styles End-->  */}
 
       {/* <!-- Footer styles Start--> */}
-      <Footer/>
+      <Footer />
     </section>
   );
 };

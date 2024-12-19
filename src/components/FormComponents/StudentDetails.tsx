@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import DynamicDetails, { AreaItem } from "./DynamicDetail";
 import DynamicDialog from "../DialogComponents/DynamicDialog"; 
 import { z } from "zod";
+import { saveDetails } from "@/utils/saveDetails";
 
 const StudentDetails: React.FC = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -68,10 +69,20 @@ const StudentDetails: React.FC = () => {
     setIsDialogOpen(true);
   };
 
-  const handleSave = (updatedArea: AreaItem[][]) => {
-    setArea(updatedArea);
-  };
+   const formatStudentDetailsPayload = (updatedArea: AreaItem[][]) => ({
+      aadharNo: updatedArea[0][0].fields[0].value,
+      dob: updatedArea[0][1].fields[0].value,
+      bloodGroup: updatedArea[0][1].fields[1].value,
+      addressOnAadhar: updatedArea[0][2].fields[0].value,
+      casteCategory: updatedArea[0][3].fields[0].value,
+      subcaste: updatedArea[0][3].fields[1].value,
+      religion: updatedArea[0][3].fields[2].value,
+   });
 
+  const handleSave = async (updatedArea: AreaItem[][]) => {
+    saveDetails(updatedArea, "/api/studentDetails", formatStudentDetailsPayload, setArea);
+  };
+  
   return (
     <>
       <DynamicDetails 

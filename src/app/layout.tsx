@@ -4,6 +4,7 @@ import "./globals.css";
 import { constructMetadata } from '@/lib/utils'
 import Header from "@/components/LandingPageComponent/Header";
 import { ClerkProvider } from '@clerk/nextjs'
+import { Toaster } from "@/components/ui/toaster";
 
 
 const recursive = Recursive({ subsets: ['latin'] })
@@ -23,6 +24,7 @@ export default function RootLayout({
       >
         <Header/>
         {children}
+        <Toaster />
       </body>
     </html>
     </ClerkProvider>

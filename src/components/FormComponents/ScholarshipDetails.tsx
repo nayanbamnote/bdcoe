@@ -1,11 +1,14 @@
 import React, { useState } from "react";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../ui/table";
-import { Pencil, Save } from "lucide-react";
-import { Button } from "../ui/button";
-import { Input } from "../ui/input";
+import TableSection from "../TableComponents/TableSection";
 
 const ScholarshipDetails = () => {
-  // Initial scholarship data
+  const scholarshipColumns = [
+    { key: "academicYear", label: "Academic Year", editable: true },
+    { key: "type", label: "Type of Scholarship", editable: true },
+    { key: "criteria", label: "Criteria", editable: true },
+    { key: "amount", label: "Amount of Scholarship", editable: true },
+  ];
+
   const initialScholarshipData = [
     { academicYear: "2020-2021", type: "Merit-based", criteria: "Top 10% in class", amount: "$1000" },
     { academicYear: "2021-2022", type: "Need-based", criteria: "Income below $30,000", amount: "$1500" },
@@ -13,111 +16,53 @@ const ScholarshipDetails = () => {
     { academicYear: "2023-2024", type: "Research Grant", criteria: "Published paper in a journal", amount: "$2500" },
   ];
 
-  // State for scholarship data and edit mode
-  const [scholarshipData, setScholarshipData] = useState(initialScholarshipData);
-  const [isEditing, setIsEditing] = useState(false);
-  const [editedData, setEditedData] = useState([...initialScholarshipData]);
+  const [isSaving, setIsSaving] = useState(false);
 
-  // Handle edit mode toggle
-  const toggleEditMode = () => {
-    setIsEditing(!isEditing);
-    // Reset edited data when entering edit mode
-    if (!isEditing) {
-      setEditedData([...scholarshipData]);
+  const onSave = async (editedData: any[]) => {
+    try {
+      setIsSaving(true);
+
+      // Format data if necessary
+      const formattedData = editedData.map((row) => ({
+        academicYear: String(row.academicYear),
+        type: String(row.type),
+        criteria: String(row.criteria),
+        amount: String(row.amount),
+      }));
+
+      console.log("Sending formatted data:", formattedData);
+
+      const response = await fetch("/api/scholarshipDetails", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formattedData),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.details || errorData.error || "Failed to save scholarship details");
+      }
+
+      const result = await response.json();
+      console.log("Scholarship details saved:", result);
+    } catch (error) {
+      console.error("Save error:", error);
+      alert(error instanceof Error ? error.message : "Unknown error");
+    } finally {
+      setIsSaving(false);
     }
   };
 
-  // Handle input changes in edit mode
-  const handleInputChange = (index: any, field: any, value: any) => {
-    const newEditedData = [...editedData];
-    newEditedData[index] = {
-      ...newEditedData[index],
-      [field]: value,
-    };
-    setEditedData(newEditedData);
-  };
-
-  // Save edited data
-  const saveChanges = () => {
-    setScholarshipData([...editedData]);
-    setIsEditing(false);
-  };
-
   return (
-    <div className="mx-auto p-4">
-      <div className="flex items-center gap-2 mb-6">
-        <h1 className="text-2xl font-bold">SCHOLARSHIP OFFERED DETAILS (IF ANY)</h1>
-        <button 
-          onClick={toggleEditMode} 
-          className="hover:bg-gray-100 rounded-full p-1"
-        >
-          <Pencil size={18} />
-        </button>
-      </div>
-
-      <Table className="border border-gray-200 w-full">
-        <TableHeader>
-          <TableRow className="bg-gray-100">
-            <TableHead>Academic Year</TableHead>
-            <TableHead>Type of Scholarship</TableHead>
-            <TableHead>Criteria</TableHead>
-            <TableHead>Amount of Scholarship</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {isEditing
-            ? editedData.map((row, index) => (
-                <TableRow key={index} className="hover:bg-gray-50">
-                  <TableCell>
-                    <Input 
-                      value={row.academicYear} 
-                      onChange={(e) => handleInputChange(index, "academicYear", e.target.value)}
-                      className="w-full"
-                    />
-                  </TableCell>
-                  <TableCell>
-                    <Input 
-                      value={row.type} 
-                      onChange={(e) => handleInputChange(index, "type", e.target.value)}
-                      className="w-full"
-                    />
-                  </TableCell>
-                  <TableCell>
-                    <Input 
-                      value={row.criteria} 
-                      onChange={(e) => handleInputChange(index, "criteria", e.target.value)}
-                      className="w-full"
-                    />
-                  </TableCell>
-                  <TableCell>
-                    <Input 
-                      value={row.amount} 
-                      onChange={(e) => handleInputChange(index, "amount", e.target.value)}
-                      className="w-full"
-                    />
-                  </TableCell>
-                </TableRow>
-              ))
-            : scholarshipData.map((row, index) => (
-                <TableRow key={index} className="hover:bg-gray-50">
-                  <TableCell>{row.academicYear}</TableCell>
-                  <TableCell>{row.type}</TableCell>
-                  <TableCell>{row.criteria}</TableCell>
-                  <TableCell>{row.amount}</TableCell>
-                </TableRow>
-              ))}
-        </TableBody>
-      </Table>
-
-      {isEditing && (
-        <div className="mt-4 flex justify-end">
-          <Button onClick={saveChanges} className="flex items-center gap-2">
-            <Save size={16} />
-            Save Changes
-          </Button>
-        </div>
-      )}
-    </div>
+    <TableSection
+      title="SCHOLARSHIP OFFERED DETAILS (IF ANY)"
+      columns={scholarshipColumns}
+      initialData={initialScholarshipData}
+      onSave={onSave}
+      isSaving={isSaving}
+    />
   );
 };
 

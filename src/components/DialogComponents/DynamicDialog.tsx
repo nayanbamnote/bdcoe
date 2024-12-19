@@ -10,7 +10,7 @@ import { AreaItem } from "../FormComponents/DynamicDetail";
 import { DatePickerField } from "./DatePickerField";
 import { SelectField } from "./SelectField";
 
-interface DynamicDialogProps {
+interface DynamicDialogProps { 
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
   area: AreaItem[][];
@@ -30,6 +30,7 @@ const DynamicDialog: React.FC<DynamicDialogProps> = ({
   area,
   onSave
 }) => {
+  console.log(area, 'area in DnamicDialog')
   // Create a dynamic form schema based on the area
   const createFormSchema = () => {
     const schemaFields: { [key: string]: z.ZodType<any> } = {};

@@ -42,9 +42,26 @@ const StudentProfileHeader = () => {
   };
 
   // Save changes
-  const saveChanges = () => {
-    setIsEditing(false);
-  };
+  const saveChanges = async () => {
+    try {
+      const response = await fetch('/api/studentProfile', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(profileDetails),
+      });
+  
+      if (!response.ok) {
+        throw new Error('Failed to save profile details');
+      }
+  
+      const result = await response.json();
+      console.log('Profile saved:', result);
+  
+      setIsEditing(false);
+    } catch (error) {
+      console.error('Error saving profile:', error);
+    }
+  };  
 
   // Cancel editing
   const cancelEditing = () => {

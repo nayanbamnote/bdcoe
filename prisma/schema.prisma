@@ -8,91 +8,95 @@ generator client {
 }
 
 model Student {
-  id              Int      @id @default(autoincrement())
-  updatedAt       DateTime @updatedAt
-  createdAt       DateTime @default(now())
+  id        Int      @id @default(autoincrement())
+  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
 
   // Clerk user authentication integration
-  clerkUserId     String   @unique
-
-  // Basic student information
-  studentID       String   @unique
-  currentSemester String   @default("Semester 1")
-  section         String   @default("A")
-  yearOfAdmission String   @default("2021")
-
-  // Relations
-  studentDetails  StudentDetails? @relation(fields: [studentDetailsId], references: [id])
-  studentDetailsId Int?            @unique
-
-  localGuardian   GuardianDetails?  @relation(fields: [localGuardianId], references: [id])
-  localGuardianId Int?            @unique
+  clerkUserId String @unique
 
   // Added relations for other models
-  academicDetails AcademicDetails[]
-  hobbyDetails    HobbyDetails[]
+  academicDetails    AcademicDetails[]
+  hobbyDetails       HobbyDetails[]
   technicalInterests TechnicalInterestDetails[]
-  siblingDetails  SiblingDetails[]
-  hostleDetails   HostleDetails[]
+  siblingDetails     SiblingDetails[]
+  hostleDetails      HostleDetails[]
   scholarshipDetails ScholarshipDetails[]
-  studentProfile  StudentProfile?
+  studentProfile     StudentProfile?
+  studentDetails     StudentDetails[] 
+  guardianDetails    GuardianDetails[]
+  additionalStudentDetails AdditionalStudentDetails[]
+}
+
+model AdditionalStudentDetails {
+  // Basic student information
+  studentID       String @unique
+  currentSemester String @default("Semester 1")
+  section         String @default("A")
+  yearOfAdmission String @default("2021")
+
+  // Relation back to Student
+  student   Student @relation(fields: [studentId], references: [id])
+  studentId Int @unique
 }
 
 model GuardianDetails {
-  id                   Int      @id @default(autoincrement())
+  id Int @id @default(autoincrement())
 
   // Father's information
-  fatherName           String
-  fatherOccupation     String?
-  fatherQualification  String?
-  fatherContact        String
+  fatherName          String
+  fatherOccupation    String?
+  fatherQualification String?
+  fatherContact       String
 
   // Mother's information
-  motherName           String
-  motherOccupation     String?
-  motherQualification  String?
-  motherContact        String
+  motherName          String
+  motherOccupation    String?
+  motherQualification String?
+  motherContact       String
 
   // Relation back to Student
-  student              Student?
+  student   Student @relation(fields: [studentId], references: [id])
+  studentId Int @unique
 }
 
 model StudentDetails {
-  id               Int       @id @default(autoincrement())
+  id Int @id @default(autoincrement())
 
   // Personal Identification
-  aadharNo         String    @unique
-  dob              DateTime
-  bloodGroup       String
+  aadharNo   String   @unique
+  dob        DateTime
+  bloodGroup String
 
   // Address Information
   addressOnAadhar  String
   permanentAddress String?
 
   // Demographic Information
-  casteCategory    String
-  subcaste         String?
-  religion         String
+  casteCategory String
+  subcaste      String?
+  religion      String
 
   // Relation back to Student
-  student          Student?
+  student   Student @relation(fields: [studentId], references: [id])
+  studentId Int @unique
 }
 
 model HobbyDetails {
-  id        Int    @id @default(autoincrement())
-  hobby     String @db.VarChar(255)
+  id    Int    @id @default(autoincrement())
+  hobby String @db.VarChar(255)
 
   // Relation to Student
   student   Student @relation(fields: [studentId], references: [id])
-  studentId Int
+  studentId Int      @unique
 }
 
 model StudentProfile {
-  id        Int    @id @default(autoincrement())
-  name      String
-  email     String @unique
-  phone     String
-  location  String
+  id       Int    @id @default(autoincrement())
+  name     String
+  email    String @unique
+  phone    String
+  location String
 
   // Relation to Student
   student   Student @relation(fields: [studentId], references: [id])
@@ -105,49 +109,54 @@ model TechnicalInterestDetails {
 
   // Relation to Student
   student   Student @relation(fields: [studentId], references: [id])
-  studentId Int
+  studentId Int @unique
 }
 
 model SiblingDetails {
-  id                     Int    @id @default(autoincrement())
-  name                   String
-  age                    Int
-  aadharNo               String @db.VarChar(14)
-  occupation             String
-  organizationAddress    String
+  id                  Int    @id @default(autoincrement())
+  name                String
+  age                 Int
+  aadharNo            String @db.VarChar(14)
+  occupation          String
+  organizationAddress String
 
   // Relation to Student
-  student                Student @relation(fields: [studentId], references: [id])
-  studentId              Int
+  student   Student @relation(fields: [studentId], references: [id])
+  studentId Int @unique
 }
 
 model AcademicDetails {
-  id          String  @id @default(cuid())
-  label       String
-  year        String
-  totalMarks  Int
-  outOfMarks  Int
-  percentage  String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id         String   @id @default(cuid())
+  label      String
+  year       String
+  totalMarks Int
+  outOfMarks Int
+  percentage String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 
   // Relation to Student
-  student     Student @relation(fields: [studentId], references: [id])
-  studentId   Int
+  student   Student @relation(fields: [studentId], references: [id])
+  studentId Int
+
+  // Add this compound unique constraint instead
+  @@unique([studentId, label])
 }
 
 model HostleDetails {
-  id               Int      @id @default(autoincrement())
-  academicYear     String
-  roomDetails      String
-  partnerDetails   String
-  transportation   String
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
+  id             Int      @id @default(autoincrement())
+  academicYear   String
+  roomDetails    String
+  partnerDetails String
+  transportation String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 
   // Relation to Student
-  student          Student @relation(fields: [studentId], references: [id])
-  studentId        Int
+  student   Student @relation(fields: [studentId], references: [id])
+  studentId Int 
+    // Add this compound unique constraint instead
+  @@unique([studentId, id])
 }
 
 model ScholarshipDetails {
@@ -158,6 +167,9 @@ model ScholarshipDetails {
   amount       String
 
   // Relation to Student
-  student      Student @relation(fields: [studentId], references: [id])
-  studentId    Int
+  student   Student @relation(fields: [studentId], references: [id])
+  studentId Int
+
+    // Add this compound unique constraint instead
+  @@unique([studentId, id])
 }
