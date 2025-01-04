@@ -1,5 +1,6 @@
 import AdditionalStudentDetails from '@/components/Form/AdditionalStudentDetails'
 import Divider from '@/components/Form/Divider'
+import SiblingDetails from '@/components/Form/SiblingDetails'
 import StudentDetails from '@/components/Form/StudentDetails'
 import StudentProfileHeader from '@/components/Form/StudentProfileHeader'
 import MaxWidthWrapper from '@/components/MaxWidthWrapper'
@@ -26,11 +27,10 @@ const page = () => {
         <StudentDetails />
          <Divider />
         <AdditionalStudentDetails />
-        
-        {/*<Divider />
-        <GuardianDetails/>
         <Divider />
         <SiblingDetails />
+        <Divider />
+        {/*<GuardianDetails/>
         <Divider />
         <TechnicalInterest />
         <Divider />

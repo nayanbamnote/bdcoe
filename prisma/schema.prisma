@@ -15,6 +15,7 @@ model Student {
   additionalDetails AdditionalStudentDetails?
   createdAt         DateTime                 @default(now())
   updatedAt         DateTime                 @updatedAt
+  siblings           SiblingDetails[]
 }
 
 model StudentProfile {
@@ -56,5 +57,18 @@ model AdditionalStudentDetails {
   religion         String
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
+}
+
+model SiblingDetails {
+  id                  Int      @id @default(autoincrement())
+  student            Student  @relation(fields: [studentId], references: [id])
+  studentId          Int
+  name               String
+  age                Int
+  aadharNo           String   @db.VarChar(14)
+  occupation         String
+  organizationAddress String
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
 }
 

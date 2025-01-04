@@ -39,3 +39,15 @@ export interface AcademicDetails extends BaseFormData {
   section: string;
   yearOfAdmission: string;
 }
+
+export interface SiblingDetail {
+  name: string;
+  age: string; // Using string for form handling, will convert to number when saving
+  aadharNo: string;
+  occupation: string;
+  organizationAddress: string;
+}
+
+export interface SiblingDetails {
+  siblings: SiblingDetail[];
+}

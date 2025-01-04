@@ -16,4 +16,12 @@ export const additionalFields: FormFieldInterface[] = [
   { key: "casteCategory", label: "Caste Category", placeholder: "Caste Category" },
   { key: "subcaste", label: "Subcaste", placeholder: "Subcaste" },
   { key: "religion", label: "Religion", placeholder: "Religion" },
+];
+
+export const siblingFields: FormFieldInterface[] = [
+  { key: "name", label: "Name", placeholder: "Sibling's Full Name" },
+  { key: "age", label: "Age", placeholder: "Age", type: "number" },
+  { key: "aadharNo", label: "Aadhar Number", placeholder: "XXXX-XXXX-XXXX" },
+  { key: "occupation", label: "Occupation", placeholder: "Current Occupation" },
+  { key: "organizationAddress", label: "Organization Address", placeholder: "Organization/Institution Address" },
 ]; 
