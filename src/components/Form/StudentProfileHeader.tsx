@@ -132,7 +132,7 @@ const StudentProfileHeader = () => {
   // If no profile data exists, show empty state with edit button
   if (!profileDetails.name && !isEditing) {
     return (
-      <div className="flex justify-between items-center p-4 bg-white rounded-lg shadow-sm">
+      <div className="flex justify-between items-center p-4 bg-white rounded-lg">
         <div className="flex items-center space-x-4 w-full">
           <div className="flex-grow">
             <div className="space-y-4">
@@ -171,7 +171,7 @@ const StudentProfileHeader = () => {
   }
 
   return (
-    <div className="flex justify-between items-center p-4 bg-white rounded-lg shadow-sm">
+    <div className="flex justify-between items-center p-4 bg-white rounded-lg ">
       <div className="flex items-center space-x-4 w-full">
         {/* Profile Details Section */}
         <div className="flex-grow">
@@ -279,7 +279,7 @@ const StudentProfileHeader = () => {
 // Skeleton component for loading state
 const ProfileSkeleton = () => {
   return (
-    <div className="flex justify-between items-center p-4 bg-white rounded-lg shadow-sm">
+    <div className="flex justify-between items-center p-4 bg-white rounded-lg ">
       <div className="flex items-center space-x-4 w-full">
         <div className="flex-grow space-y-4">
           <Skeleton className="h-8 w-[200px]" />
