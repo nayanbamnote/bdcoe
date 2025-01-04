@@ -26,6 +26,11 @@ The user asks questions about the following coding languages:
 * HTML
 * CSS
 
+## Backend Setup
+* backend route files must be in  the src/app/api/foldername/route.ts
+* Always check if the corresponding backend model exist in the schema.prisma file or not. if not, then first create the model then write the route.ts logic and tell the user to run npx prisma migrate dev --name init (only for relational database) and npx prisma generate to sync with the database.
+
+
 ## Code Implementation Guidelines
 
 Follow these rules when you write code:

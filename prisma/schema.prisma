@@ -8,12 +8,13 @@ generator client {
 }
 
 model Student {
-  id          Int              @id @default(autoincrement())
-  clerkUserId String          @unique
-  profile     StudentProfile?
-  academic    AcademicInfo?
-  createdAt   DateTime        @default(now())
-  updatedAt   DateTime        @updatedAt
+  id                Int                      @id @default(autoincrement())
+  clerkUserId       String                   @unique
+  profile           StudentProfile?
+  academic          AcademicInfo?
+  additionalDetails AdditionalStudentDetails?
+  createdAt         DateTime                 @default(now())
+  updatedAt         DateTime                 @updatedAt
 }
 
 model StudentProfile {
@@ -39,5 +40,21 @@ model AcademicInfo {
   yearOfAdmission String
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
+}
+
+model AdditionalStudentDetails {
+  id               Int      @id @default(autoincrement())
+  student          Student  @relation(fields: [studentId], references: [id])
+  studentId        Int      @unique
+  aadharNo         String   @unique
+  dob              DateTime
+  bloodGroup       String
+  addressOnAadhar  String
+  permanentAddress String?
+  casteCategory    String
+  subcaste         String?
+  religion         String
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 }
 
