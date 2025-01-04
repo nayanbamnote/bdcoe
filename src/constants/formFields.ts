@@ -24,4 +24,15 @@ export const siblingFields: FormFieldInterface[] = [
   { key: "aadharNo", label: "Aadhar Number", placeholder: "XXXX-XXXX-XXXX" },
   { key: "occupation", label: "Occupation", placeholder: "Current Occupation" },
   { key: "organizationAddress", label: "Organization Address", placeholder: "Organization/Institution Address" },
+];
+
+export const guardianFields: FormFieldInterface[] = [
+  { key: "fatherName", label: "Father's Name", placeholder: "Enter father's name" },
+  { key: "fatherOccupation", label: "Father's Occupation", placeholder: "Enter father's occupation" },
+  { key: "fatherQualification", label: "Father's Qualification", placeholder: "Enter father's qualification" },
+  { key: "fatherContact", label: "Father's Contact", placeholder: "Enter father's contact number" },
+  { key: "motherName", label: "Mother's Name", placeholder: "Enter mother's name" },
+  { key: "motherOccupation", label: "Mother's Occupation", placeholder: "Enter mother's occupation" },
+  { key: "motherQualification", label: "Mother's Qualification", placeholder: "Enter mother's qualification" },
+  { key: "motherContact", label: "Mother's Contact", placeholder: "Enter mother's contact number" },
 ]; 

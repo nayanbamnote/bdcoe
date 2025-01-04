@@ -1,5 +1,6 @@
 import AdditionalStudentDetails from '@/components/Form/AdditionalStudentDetails'
 import Divider from '@/components/Form/Divider'
+import GuardianDetails from '@/components/Form/GuardianDetails'
 import SiblingDetails from '@/components/Form/SiblingDetails'
 import StudentDetails from '@/components/Form/StudentDetails'
 import StudentProfileHeader from '@/components/Form/StudentProfileHeader'
@@ -30,9 +31,9 @@ const page = () => {
         <Divider />
         <SiblingDetails />
         <Divider />
-        {/*<GuardianDetails/>
+        <GuardianDetails/>
         <Divider />
-        <TechnicalInterest />
+        {/*<TechnicalInterest />
         <Divider />
         <HobbyExtracurricular />
         <Divider />

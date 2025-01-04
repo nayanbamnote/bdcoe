@@ -51,3 +51,14 @@ export interface SiblingDetail {
 export interface SiblingDetails {
   siblings: SiblingDetail[];
 }
+
+export interface GuardianDetails extends BaseFormData {
+  fatherName: string;
+  fatherOccupation: string;
+  fatherQualification: string;
+  fatherContact: string;
+  motherName: string;
+  motherOccupation: string;
+  motherQualification: string;
+  motherContact: string;
+}
