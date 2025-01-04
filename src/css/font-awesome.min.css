@@ -1,10 +1,4 @@
-@font-face{
-    font-family:'FontAwesome';
-    src:url('../app/fonts/fontawesome-webfont_1.eot');
-    src:url('../app/fonts/fontawesome-webfont.eot#iefix&v=4.6.3') format('embedded-opentype'),url('../app/fonts/fontawesome-webfont.woff2') format('woff2'),url('../app/fonts/fontawesome-webfont.woff') format('woff'),url('../app/fonts/fontawesome-webfont.ttf') format('truetype');
-    font-weight:normal;
-    font-style:normal
-}
+
 .fa{
         display:inline-block;
     font:normal normal normal 14px/1 FontAwesome;

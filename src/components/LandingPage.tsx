@@ -1,11 +1,14 @@
 "use client";
 import React from "react";
+import { useInView } from "react-intersection-observer";
+import MaxWidthWrapper from "./MaxWidthWrapper";
 import "@/css/animate.css";
 import "@/css/bootstrap.min.css";
 import "@/css/font-awesome.min.css";
 import "@/css/meanmenu.css";
 import "@/css/one.css";
 import "@/css/style.css";
+import Header from "./LandingPageComponent/Header";
 import Footer from "./LandingPageComponent/Footer";
 import Banner from "./LandingPageComponent/Banner";
 import Callouts from "./LandingPageComponent/Callouts";
