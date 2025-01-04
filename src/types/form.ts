@@ -52,7 +52,7 @@ export interface SiblingDetails {
   siblings: SiblingDetail[];
 }
 
-export interface GuardianDetails extends BaseFormData {
+export interface GuardianDetailsInterface extends BaseFormData {
   fatherName: string;
   fatherOccupation: string;
   fatherQualification: string;
@@ -61,4 +61,12 @@ export interface GuardianDetails extends BaseFormData {
   motherOccupation: string;
   motherQualification: string;
   motherContact: string;
+}
+
+export interface HobbyDetail extends BaseFormData {
+  hobby: string;
+}
+
+export interface TechnicalInterestDetail extends BaseFormData {
+  interest: string;
 }

@@ -148,7 +148,7 @@ export const FormLayout = <T extends BaseFormData>({
   }
 
   return (
-    <div className="flex gap-[8px] min-h-[160px]">
+    <div className="flex gap-[8px] h-auto">
       <div className="pr-[85px] pt-[20px] w-[200px] shrink-0">
         {title}
       </div>

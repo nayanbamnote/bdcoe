@@ -35,4 +35,12 @@ export const guardianFields: FormFieldInterface[] = [
   { key: "motherOccupation", label: "Mother's Occupation", placeholder: "Enter mother's occupation" },
   { key: "motherQualification", label: "Mother's Qualification", placeholder: "Enter mother's qualification" },
   { key: "motherContact", label: "Mother's Contact", placeholder: "Enter mother's contact number" },
+];
+
+export const hobbyFields: FormFieldInterface[] = [
+  { key: "hobby", label: "Hobby", placeholder: "Enter your hobby" },
+];
+
+export const technicalInterestFields: FormFieldInterface[] = [
+  { key: "interest", label: "Technical Interest", placeholder: "Enter your technical interest" },
 ]; 

@@ -2,37 +2,28 @@
 import React, { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { FormLayout } from "./FormComponents";
-import { guardianFields } from "@/constants/formFields";
-import { GuardianDetailsInterface } from "@/types/form";
+import { hobbyFields } from "@/constants/formFields";
+import { HobbyDetail } from "@/types/form";
 
-const GuardianDetails: React.FC = () => {
+const HobbyDetails: React.FC = () => {
   const { toast } = useToast();
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
-  const [guardianDetails, setGuardianDetails] = useState<GuardianDetailsInterface>({
-    fatherName: "",
-    fatherOccupation: "",
-    fatherQualification: "",
-    fatherContact: "",
-    motherName: "",
-    motherOccupation: "",
-    motherQualification: "",
-    motherContact: "",
-  });
+  const [hobbies, setHobbies] = useState<HobbyDetail[]>([]);
 
   useEffect(() => {
-    const fetchGuardianInfo = async () => {
+    const fetchHobbies = async () => {
       try {
-        const response = await fetch("/api/guardian");
+        const response = await fetch("/api/hobbies");
         const { data } = await response.json();
         if (data) {
-          setGuardianDetails(data);
+          setHobbies(data);
         }
       } catch (error) {
         toast({
           title: "Error",
-          description: "Failed to load guardian details",
+          description: "Failed to load hobby data",
           variant: "destructive",
         });
       } finally {
@@ -40,30 +31,23 @@ const GuardianDetails: React.FC = () => {
       }
     };
 
-    fetchGuardianInfo();
+    fetchHobbies();
   }, [toast]);
-
-  const handleInputChange = (field: keyof GuardianDetailsInterface, value: string) => {
-    setGuardianDetails((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
-  };
 
   const handleSave = async () => {
     setIsSaving(true);
     try {
-      const response = await fetch("/api/guardian", {
+      const response = await fetch("/api/hobbies", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(guardianDetails),
+        body: JSON.stringify({ hobbies }),
       });
 
       if (!response.ok) throw new Error("Failed to save changes");
 
       toast({
         title: "Success",
-        description: "Guardian details updated successfully",
+        description: "Hobbies updated successfully",
       });
       setIsEditing(false);
     } catch (error) {
@@ -78,19 +62,19 @@ const GuardianDetails: React.FC = () => {
   };
 
   return (
-    <FormLayout<GuardianDetailsInterface>
-      title="Guardian Information"
-      fields={guardianFields}
-      data={guardianDetails}
+    <FormLayout<HobbyDetail>
+      title="Hobbies"
+      fields={hobbyFields}
+      data={hobbies[0] || { hobby: "" }}
       isEditing={isEditing}
       isLoading={isLoading}
       isSaving={isSaving}
       onEdit={() => setIsEditing(true)}
       onSave={handleSave}
       onCancel={() => setIsEditing(false)}
-      onInputChange={handleInputChange}
+      onInputChange={(field, value) => setHobbies([{ hobby: value }])}
     />
   );
 };
 
-export default GuardianDetails; 
+export default HobbyDetails; 

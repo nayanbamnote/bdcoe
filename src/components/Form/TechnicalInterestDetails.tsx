@@ -2,37 +2,28 @@
 import React, { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { FormLayout } from "./FormComponents";
-import { guardianFields } from "@/constants/formFields";
-import { GuardianDetailsInterface } from "@/types/form";
+import { technicalInterestFields } from "@/constants/formFields";
+import { TechnicalInterestDetail } from "@/types/form";
 
-const GuardianDetails: React.FC = () => {
+const TechnicalInterestDetails: React.FC = () => {
   const { toast } = useToast();
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
-  const [guardianDetails, setGuardianDetails] = useState<GuardianDetailsInterface>({
-    fatherName: "",
-    fatherOccupation: "",
-    fatherQualification: "",
-    fatherContact: "",
-    motherName: "",
-    motherOccupation: "",
-    motherQualification: "",
-    motherContact: "",
-  });
+  const [interests, setInterests] = useState<TechnicalInterestDetail[]>([]);
 
   useEffect(() => {
-    const fetchGuardianInfo = async () => {
+    const fetchInterests = async () => {
       try {
-        const response = await fetch("/api/guardian");
+        const response = await fetch("/api/technical-interests");
         const { data } = await response.json();
         if (data) {
-          setGuardianDetails(data);
+          setInterests(data);
         }
       } catch (error) {
         toast({
           title: "Error",
-          description: "Failed to load guardian details",
+          description: "Failed to load technical interests",
           variant: "destructive",
         });
       } finally {
@@ -40,30 +31,23 @@ const GuardianDetails: React.FC = () => {
       }
     };
 
-    fetchGuardianInfo();
+    fetchInterests();
   }, [toast]);
-
-  const handleInputChange = (field: keyof GuardianDetailsInterface, value: string) => {
-    setGuardianDetails((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
-  };
 
   const handleSave = async () => {
     setIsSaving(true);
     try {
-      const response = await fetch("/api/guardian", {
+      const response = await fetch("/api/technical-interests", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(guardianDetails),
+        body: JSON.stringify({ interests }),
       });
 
       if (!response.ok) throw new Error("Failed to save changes");
 
       toast({
         title: "Success",
-        description: "Guardian details updated successfully",
+        description: "Technical interests updated successfully",
       });
       setIsEditing(false);
     } catch (error) {
@@ -78,19 +62,19 @@ const GuardianDetails: React.FC = () => {
   };
 
   return (
-    <FormLayout<GuardianDetailsInterface>
-      title="Guardian Information"
-      fields={guardianFields}
-      data={guardianDetails}
+    <FormLayout<TechnicalInterestDetail>
+      title="Technical Interests"
+      fields={technicalInterestFields}
+      data={interests[0] || { interest: "" }}
       isEditing={isEditing}
       isLoading={isLoading}
       isSaving={isSaving}
       onEdit={() => setIsEditing(true)}
       onSave={handleSave}
       onCancel={() => setIsEditing(false)}
-      onInputChange={handleInputChange}
+      onInputChange={(field, value) => setInterests([{ interest: value }])}
     />
   );
 };
 
-export default GuardianDetails; 
+export default TechnicalInterestDetails; 
