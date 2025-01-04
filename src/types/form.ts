@@ -1,3 +1,5 @@
+import * as z from "zod";
+
 export interface FormFieldInterface {
   key: string;
   label: string;
@@ -11,7 +13,7 @@ export interface BaseFormData {
 
 export interface FormProps<T extends BaseFormData> {
   title: string;
-  fields: FormFieldInterface[];
+  fields: FormFieldWithValidation[]; 
   data: T;
   isEditing: boolean;
   isLoading: boolean;
@@ -70,3 +72,7 @@ export interface HobbyDetail extends BaseFormData {
 export interface TechnicalInterestDetail extends BaseFormData {
   interest: string;
 }
+
+export interface FormFieldWithValidation extends FormFieldInterface {
+    validation?: z.ZodSchema;
+  }

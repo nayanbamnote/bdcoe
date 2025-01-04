@@ -1,9 +1,13 @@
-import React from "react";
+import React, { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Pencil, Save, X, Loader2 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
-import { FormFieldInterface, BaseFormData, FormProps } from "@/types/form";
+import { FormFieldInterface, BaseFormData, FormProps, FormFieldWithValidation } from "@/types/form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import * as z from "zod";
+import { cn } from "@/lib/utils";
 
 export const FormSkeleton = ({ fieldCount }: { fieldCount: number }) => {
   return (
@@ -52,12 +56,35 @@ export const EmptyState = ({ message, onEdit }: { message: string, onEdit: () =>
   </div>
 );
 
-export const FormField = ({ field, value, onChange, isEditing }: {
-  field: FormFieldInterface;
+export const FormField = ({ 
+  field, 
+  value, 
+  onChange, 
+  isEditing,
+  error 
+}: {
+  field: FormFieldWithValidation;
   value: string;
   onChange: (value: string) => void;
   isEditing: boolean;
+  error?: string;
 }) => {
+  const handleChange = (newValue: string) => {
+    onChange(newValue);
+    
+    // Validate the new value if validation rule exists
+    if (field.validation) {
+      try {
+        field.validation.parse(newValue);
+      } catch (err) {
+        if (err instanceof z.ZodError) {
+          // Return validation error message
+          return err.errors[0].message;
+        }
+      }
+    }
+  };
+
   if (isEditing) {
     return (
       <div className="space-y-[4px]">
@@ -65,10 +92,16 @@ export const FormField = ({ field, value, onChange, isEditing }: {
         <Input
           type={field.type || "text"}
           value={value}
-          onChange={(e) => onChange(e.target.value)}
+          onChange={(e) => handleChange(e.target.value)}
           placeholder={field.placeholder}
-          className="h-[36px]"
+          className={cn(
+            "h-[36px]",
+            error && "border-red-500 focus-visible:ring-red-500"
+          )}
         />
+        {error && (
+          <p className="text-[12px] text-red-500">{error}</p>
+        )}
       </div>
     );
   }
@@ -138,6 +171,36 @@ export const FormLayout = <T extends BaseFormData>({
   onCancel,
   onInputChange
 }: FormProps<T>) => {
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
+  const validateForm = (): boolean => {
+    const newErrors: Record<string, string> = {};
+    let isValid = true;
+
+    fields.forEach((field) => {
+      if ('validation' in field && field.validation) {
+        try {
+          field.validation.parse(data[field.key]);
+        } catch (err) {
+          if (err instanceof z.ZodError) {
+            newErrors[field.key] = err.errors[0].message;
+            isValid = false;
+          }
+        }
+      }
+    });
+
+    setErrors(newErrors);
+    return isValid;
+  };
+
+  const handleSave = async () => {
+    if (!validateForm()) {
+      return;
+    }
+    onSave();
+  };
+
   if (isLoading) {
     return <FormSkeleton fieldCount={fields.length} />;
   }
@@ -160,8 +223,18 @@ export const FormLayout = <T extends BaseFormData>({
               key={field.key}
               field={field}
               value={data[field.key]}
-              onChange={(value) => onInputChange(field.key as keyof T, value)}
+              onChange={(value) => {
+                onInputChange(field.key as keyof T, value);
+                // Clear error when field is modified
+                if (errors[field.key]) {
+                  setErrors(prev => ({
+                    ...prev,
+                    [field.key]: ''
+                  }));
+                }
+              }}
               isEditing={isEditing}
+              error={errors[field.key]}
             />
           ))}
         </div>
@@ -170,7 +243,7 @@ export const FormLayout = <T extends BaseFormData>({
       <FormActions
         isEditing={isEditing}
         isSaving={isSaving}
-        onSave={onSave}
+        onSave={handleSave}
         onCancel={onCancel}
         onEdit={onEdit}
       />

@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { siblingFields } from "@/constants/formFields";
 import { SiblingDetail } from "@/types/form";
 import { Card } from "@/components/ui/card";
+import { z } from "zod";
 
 const emptySibling: SiblingDetail = {
   name: "",
@@ -16,12 +17,31 @@ const emptySibling: SiblingDetail = {
   organizationAddress: "",
 };
 
+const siblingSchema = z.object({
+  name: z.string().min(1, "Name is required").max(50, "Name is too long"),
+  age: z.string()
+    .min(1, "Age is required")
+    .refine((val) => !isNaN(Number(val)) && Number(val) >= 0 && Number(val) <= 100, {
+      message: "Age must be between 0 and 100",
+    }),
+  aadharNo: z.string()
+    .length(12, "Aadhar number must be 12 digits")
+    .regex(/^\d+$/, "Aadhar number must contain only digits"),
+  occupation: z.string().min(1, "Occupation is required").max(50, "Occupation is too long"),
+  organizationAddress: z.string().min(1, "Organization address is required").max(200, "Address is too long"),
+});
+
+type ValidationErrors = {
+  [K in keyof SiblingDetail]?: string;
+};
+
 const SiblingDetails: React.FC = () => {
   const { toast } = useToast();
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [siblings, setSiblings] = useState<SiblingDetail[]>([]);
+  const [errors, setErrors] = useState<ValidationErrors[]>([]);
 
   useEffect(() => {
     const fetchSiblings = async () => {
@@ -62,9 +82,53 @@ const SiblingDetails: React.FC = () => {
       };
       return updated;
     });
+
+    const fieldSchema = siblingSchema.shape[field];
+    try {
+      fieldSchema.parse(value);
+      setErrors((prev) => {
+        const newErrors = [...prev];
+        if (newErrors[index]) {
+          delete newErrors[index]?.[field];
+        }
+        return newErrors;
+      });
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        setErrors((prev) => {
+          const newErrors = [...prev];
+          if (!newErrors[index]) newErrors[index] = {};
+          newErrors[index]![field] = error.errors[0].message;
+          return newErrors;
+        });
+      }
+    }
   };
 
   const handleSave = async () => {
+    const validationResults = siblings.map((sibling) => {
+      try {
+        siblingSchema.parse(sibling);
+        return null;
+      } catch (error) {
+        if (error instanceof z.ZodError) {
+          const fieldErrors: ValidationErrors = {};
+          error.errors.forEach((err) => {
+            const path = err.path[0] as keyof SiblingDetail;
+            fieldErrors[path] = err.message;
+          });
+          return fieldErrors;
+        }
+        return null;
+      }
+    });
+
+    const hasErrors = validationResults.some((result) => result !== null);
+    if (hasErrors) {
+      setErrors(validationResults as ValidationErrors[]);
+      return;
+    }
+
     setIsSaving(true);
     try {
       const response = await fetch("/api/siblings", {
@@ -129,15 +193,26 @@ const SiblingDetails: React.FC = () => {
                         {field.label}
                       </p>
                       {isEditing ? (
-                        <Input
-                          type={field.type || "text"}
-                          value={sibling[field.key as keyof SiblingDetail]}
-                          onChange={(e) =>
-                            handleInputChange(index, field.key as keyof SiblingDetail, e.target.value)
-                          }
-                          placeholder={field.placeholder}
-                          className="h-[36px]"
-                        />
+                        <div className="space-y-[4px]">
+                          <Input
+                            type={field.type || "text"}
+                            value={sibling[field.key as keyof SiblingDetail]}
+                            onChange={(e) =>
+                              handleInputChange(index, field.key as keyof SiblingDetail, e.target.value)
+                            }
+                            placeholder={field.placeholder}
+                            className={`h-[36px] ${
+                              errors[index]?.[field.key as keyof SiblingDetail] 
+                                ? "border-red-500 focus-visible:ring-red-500" 
+                                : ""
+                            }`}
+                          />
+                          {errors[index]?.[field.key as keyof SiblingDetail] && (
+                            <p className="text-[12px] text-red-500">
+                              {errors[index]?.[field.key as keyof SiblingDetail]}
+                            </p>
+                          )}
+                        </div>
                       ) : (
                         <p className="text-[14px] text-gray-900">
                           {sibling[field.key as keyof SiblingDetail]}

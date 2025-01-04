@@ -1,17 +1,8 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Pencil, Save, X, Loader2 } from "lucide-react";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import TableWrapper from "./shared/TableWrapper";
+import TableContent from "./shared/TableContent";
 
 interface AcademicDetail {
   label: string;
@@ -32,6 +23,14 @@ const ACADEMIC_LABELS = [
   "6-Sem",
   "7-Sem",
   "8-Sem",
+];
+
+const ACADEMIC_COLUMNS = [
+  { header: "Examination", key: "label" },
+  { header: "Year", key: "year", placeholder: "YYYY" },
+  { header: "Marks Obtained", key: "totalMarks", type: "number", placeholder: "0" },
+  { header: "Out Of", key: "outOfMarks", type: "number", placeholder: "0" },
+  { header: "Percentage", key: "percentage" }
 ];
 
 const AcademicsTable: React.FC = () => {
@@ -55,7 +54,6 @@ const AcademicsTable: React.FC = () => {
         const response = await fetch("/api/academic-details");
         const { data } = await response.json();
         if (data && data.length > 0) {
-          // Merge existing data with default labels
           const mergedData = ACADEMIC_LABELS.map((label) => {
             const existingRecord = data.find((d: AcademicDetail) => d.label === label);
             return existingRecord || {
@@ -84,7 +82,7 @@ const AcademicsTable: React.FC = () => {
 
   const handleInputChange = (
     index: number,
-    field: keyof AcademicDetail,
+    field: string,
     value: string
   ) => {
     setAcademicDetails((prev) => {
@@ -92,14 +90,13 @@ const AcademicsTable: React.FC = () => {
       const updatedDetail = { ...updated[index] };
 
       if (field === "totalMarks" || field === "outOfMarks") {
-        updatedDetail[field] = parseInt(value) || 0;
-        // Calculate percentage when either marks field changes
+        (updatedDetail as any)[field] = parseInt(value) || 0;
         if (updatedDetail.outOfMarks > 0) {
           const percentage = (updatedDetail.totalMarks / updatedDetail.outOfMarks) * 100;
           updatedDetail.percentage = percentage.toFixed(2);
         }
       } else {
-        updatedDetail[field] = value;
+        (updatedDetail as any)[field] = value;
       }
 
       updated[index] = updatedDetail;
@@ -139,110 +136,21 @@ const AcademicsTable: React.FC = () => {
   }
 
   return (
-    <div className="space-y-[16px]">
-      <div className="flex items-center justify-between">
-        <h2 className="text-[18px] font-semibold">Academic History</h2>
-        <div className="flex space-x-[8px]">
-          {isEditing ? (
-            <>
-              <Button
-                variant="outline"
-                size="icon"
-                onClick={() => setIsEditing(false)}
-                className="hover:bg-red-50"
-              >
-                <X className="size-[20px] text-red-500" />
-              </Button>
-              <Button
-                onClick={handleSave}
-                className="flex items-center gap-[8px]"
-                disabled={isSaving}
-              >
-                {isSaving ? (
-                  <Loader2 className="size-[16px] animate-spin" />
-                ) : (
-                  <Save className="size-[16px]" />
-                )}
-                {isSaving ? "Saving..." : "Save"}
-              </Button>
-            </>
-          ) : (
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={() => setIsEditing(true)}
-              className="hover:bg-gray-100"
-            >
-              <Pencil size={18} />
-            </Button>
-          )}
-        </div>
-      </div>
-
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Examination</TableHead>
-            <TableHead>Year</TableHead>
-            <TableHead>Marks Obtained</TableHead>
-            <TableHead>Out Of</TableHead>
-            <TableHead>Percentage</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {academicDetails.map((detail, index) => (
-            <TableRow key={detail.label}>
-              <TableCell className="font-medium">{detail.label}</TableCell>
-              <TableCell>
-                {isEditing ? (
-                  <Input
-                    value={detail.year}
-                    onChange={(e) => handleInputChange(index, "year", e.target.value)}
-                    className="h-[36px]"
-                    placeholder="YYYY"
-                  />
-                ) : (
-                  detail.year || "-"
-                )}
-              </TableCell>
-              <TableCell>
-                {isEditing ? (
-                  <Input
-                    type="number"
-                    value={detail.totalMarks || ""}
-                    onChange={(e) =>
-                      handleInputChange(index, "totalMarks", e.target.value)
-                    }
-                    className="h-[36px]"
-                    placeholder="0"
-                  />
-                ) : (
-                  detail.totalMarks || "-"
-                )}
-              </TableCell>
-              <TableCell>
-                {isEditing ? (
-                  <Input
-                    type="number"
-                    value={detail.outOfMarks || ""}
-                    onChange={(e) =>
-                      handleInputChange(index, "outOfMarks", e.target.value)
-                    }
-                    className="h-[36px]"
-                    placeholder="0"
-                  />
-                ) : (
-                  detail.outOfMarks || "-"
-                )}
-              </TableCell>
-              <TableCell>
-                {detail.percentage ? `${detail.percentage}%` : "-"}
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </div>
+    <TableWrapper
+      title="Academic History"
+      isEditing={isEditing}
+      isSaving={isSaving}
+      onEdit={() => setIsEditing(true)}
+      onSave={handleSave}
+      onCancel={() => setIsEditing(false)}
+    >
+      <TableContent
+        columns={ACADEMIC_COLUMNS}
+        data={academicDetails}
+        isEditing={isEditing}
+        onInputChange={handleInputChange}
+      />
+    </TableWrapper>
   );
 };
 

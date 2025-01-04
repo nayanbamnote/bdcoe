@@ -1,17 +1,8 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Pencil, Save, X, Loader2 } from "lucide-react";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import TableWrapper from "./shared/TableWrapper";
+import TableContent from "./shared/TableContent";
 
 interface ScholarshipDetail {
   year: string;
@@ -26,6 +17,14 @@ const SCHOLARSHIP_YEARS = [
   "Second Year",
   "Third Year",
   "Fourth Year",
+];
+
+const SCHOLARSHIP_COLUMNS = [
+  { header: "Year", key: "year" },
+  { header: "Academic Year", key: "academicYear", placeholder: "YYYY-YY" },
+  { header: "Type of Scholarship", key: "type", placeholder: "Type of Scholarship" },
+  { header: "Criteria", key: "criteria", placeholder: "Eligibility Criteria" },
+  { header: "Amount", key: "amount", placeholder: "Amount in ₹" },
 ];
 
 const ScholarshipDetails: React.FC = () => {
@@ -49,7 +48,6 @@ const ScholarshipDetails: React.FC = () => {
         const response = await fetch("/api/scholarship-details");
         const { data } = await response.json();
         if (data && data.length > 0) {
-          // Merge existing data with default years
           const mergedData = SCHOLARSHIP_YEARS.map((year) => {
             const existingRecord = data.find((d: ScholarshipDetail) => d.year === year);
             return existingRecord || {
@@ -78,14 +76,15 @@ const ScholarshipDetails: React.FC = () => {
 
   const handleInputChange = (
     index: number,
-    field: keyof ScholarshipDetail,
+    field: string,
     value: string
   ) => {
     setScholarshipDetails((prev) => {
       const updated = [...prev];
-      const updatedDetail = { ...updated[index] };
-      updatedDetail[field] = value;
-      updated[index] = updatedDetail;
+      updated[index] = {
+        ...updated[index],
+        [field]: value,
+      };
       return updated;
     });
   };
@@ -122,113 +121,21 @@ const ScholarshipDetails: React.FC = () => {
   }
 
   return (
-    <div className="space-y-[16px]">
-      <div className="flex items-center justify-between">
-        <h2 className="text-[18px] font-semibold">Scholarship Details</h2>
-        <div className="flex space-x-[8px]">
-          {isEditing ? (
-            <>
-              <Button
-                variant="outline"
-                size="icon"
-                onClick={() => setIsEditing(false)}
-                className="hover:bg-red-50"
-              >
-                <X className="size-[20px] text-red-500" />
-              </Button>
-              <Button
-                onClick={handleSave}
-                className="flex items-center gap-[8px]"
-                disabled={isSaving}
-              >
-                {isSaving ? (
-                  <Loader2 className="size-[16px] animate-spin" />
-                ) : (
-                  <Save className="size-[16px]" />
-                )}
-                {isSaving ? "Saving..." : "Save"}
-              </Button>
-            </>
-          ) : (
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={() => setIsEditing(true)}
-              className="hover:bg-gray-100"
-            >
-              <Pencil size={18} />
-            </Button>
-          )}
-        </div>
-      </div>
-
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Year</TableHead>
-            <TableHead>Academic Year</TableHead>
-            <TableHead>Type of Scholarship</TableHead>
-            <TableHead>Criteria</TableHead>
-            <TableHead>Amount</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {scholarshipDetails.map((detail, index) => (
-            <TableRow key={detail.year}>
-              <TableCell className="font-medium">{detail.year}</TableCell>
-              <TableCell>
-                {isEditing ? (
-                  <Input
-                    value={detail.academicYear}
-                    onChange={(e) => handleInputChange(index, "academicYear", e.target.value)}
-                    className="h-[36px]"
-                    placeholder="YYYY-YY"
-                  />
-                ) : (
-                  detail.academicYear || "-"
-                )}
-              </TableCell>
-              <TableCell>
-                {isEditing ? (
-                  <Input
-                    value={detail.type}
-                    onChange={(e) => handleInputChange(index, "type", e.target.value)}
-                    className="h-[36px]"
-                    placeholder="Type of Scholarship"
-                  />
-                ) : (
-                  detail.type || "-"
-                )}
-              </TableCell>
-              <TableCell>
-                {isEditing ? (
-                  <Input
-                    value={detail.criteria}
-                    onChange={(e) => handleInputChange(index, "criteria", e.target.value)}
-                    className="h-[36px]"
-                    placeholder="Eligibility Criteria"
-                  />
-                ) : (
-                  detail.criteria || "-"
-                )}
-              </TableCell>
-              <TableCell>
-                {isEditing ? (
-                  <Input
-                    value={detail.amount}
-                    onChange={(e) => handleInputChange(index, "amount", e.target.value)}
-                    className="h-[36px]"
-                    placeholder="Amount in ₹"
-                  />
-                ) : (
-                  detail.amount || "-"
-                )}
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </div>
+    <TableWrapper
+      title="Scholarship Details"
+      isEditing={isEditing}
+      isSaving={isSaving}
+      onEdit={() => setIsEditing(true)}
+      onSave={handleSave}
+      onCancel={() => setIsEditing(false)}
+    >
+      <TableContent
+        columns={SCHOLARSHIP_COLUMNS}
+        data={scholarshipDetails}
+        isEditing={isEditing}
+        onInputChange={handleInputChange}
+      />
+    </TableWrapper>
   );
 };
 

@@ -71,6 +71,7 @@ const AccommodationToggle: React.FC<AccommodationToggleProps> = ({ onToggleChang
     const endpoint = field === 'hasScholarship' ? '/api/scholarship' : '/api/hostel';
     
     try {
+      // First update the toggle state
       const response = await fetch(endpoint, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
@@ -78,6 +79,19 @@ const AccommodationToggle: React.FC<AccommodationToggleProps> = ({ onToggleChang
       });
 
       if (!response.ok) throw new Error("Failed to update");
+
+      // If toggling off, delete the corresponding details
+      if (!newValue) {
+        const deleteEndpoint = field === 'hasScholarship' 
+          ? '/api/scholarship-details/delete' 
+          : '/api/hostel-details/delete';
+        
+        const deleteResponse = await fetch(deleteEndpoint, {
+          method: "DELETE",
+        });
+
+        if (!deleteResponse.ok) throw new Error("Failed to delete details");
+      }
 
       setToggles(newToggles);
       onToggleChangeRef.current(newToggles);
