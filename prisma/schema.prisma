@@ -20,6 +20,8 @@ model Student {
   hobbies            HobbyDetails[]
   academicDetails   AcademicDetails[]    
   technicalInterests TechnicalInterestDetails[]
+  scholarship       Scholarship?
+  hostel           Hostel?
 }
 
 model StudentProfile {
@@ -123,5 +125,23 @@ model AcademicDetails {
   updatedAt  DateTime @updatedAt
 
   @@unique([studentId, label])
+}
+
+model Scholarship {
+  id           Int      @id @default(autoincrement())
+  student      Student  @relation(fields: [studentId], references: [id])
+  studentId    Int      @unique
+  hasScholarship Boolean @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Hostel {
+  id         Int      @id @default(autoincrement())
+  student    Student  @relation(fields: [studentId], references: [id])
+  studentId  Int      @unique
+  isHosteler Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 }
 

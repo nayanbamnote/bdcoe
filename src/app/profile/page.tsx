@@ -1,3 +1,5 @@
+"use client";
+import React, { useState } from 'react';
 import AdditionalStudentDetails from '@/components/Form/AdditionalStudentDetails'
 import Divider from '@/components/Form/Divider'
 import GuardianDetails from '@/components/Form/GuardianDetails'
@@ -7,11 +9,27 @@ import StudentProfileHeader from '@/components/Form/StudentProfileHeader'
 import MaxWidthWrapper from '@/components/MaxWidthWrapper'
 import AcademicsTable from '@/components/Form/AcademicsTable'
 import { ShieldAlert } from 'lucide-react'
-import React from 'react'
 import HobbyDetails from '@/components/Form/HobbyDetails'
 import TechnicalInterestDetails from '@/components/Form/TechnicalInterestDetails'
+import AccommodationToggle from '@/components/Form/AccommodationToggle'
+import ScholarshipDetails from '@/components/Form/ScholarshipDetails'
+import HostelDetails from '@/components/Form/HostelDetails'
 
-const page = () => {
+interface AccommodationToggles {
+  hasScholarship: boolean;
+  isHosteler: boolean;
+}
+
+const Page = () => {
+  const [toggleStates, setToggleStates] = useState<AccommodationToggles>({
+    hasScholarship: false,
+    isHosteler: false,
+  });
+
+  const handleToggleChange = (newToggles: AccommodationToggles) => {
+    setToggleStates(newToggles);
+  };
+
   return (
     <MaxWidthWrapper className="my-[48px]">
     <h1 className="text-black33 text-xl text-center ">Student Information</h1>
@@ -42,10 +60,19 @@ const page = () => {
         <Divider />
         <AcademicsTable />
         <Divider />
-        {/*<ScholarshipDetails />
+        <AccommodationToggle onToggleChange={handleToggleChange} />
         <Divider />
-        <HostelDetails /> 
-        */}
+        {toggleStates.hasScholarship && (
+          <>
+            <ScholarshipDetails />
+            <Divider />
+          </>
+        )}
+        {toggleStates.isHosteler && (
+          <>
+            <HostelDetails />
+          </>
+        )}
       </div>
     </div>
     </div>
@@ -53,4 +80,4 @@ const page = () => {
   )
 }
 
-export default page
+export default Page
