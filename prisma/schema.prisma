@@ -18,6 +18,7 @@ model Student {
   updatedAt         DateTime                 @updatedAt
   siblings           SiblingDetails[]
   hobbies            HobbyDetails[]
+  academicDetails   AcademicDetails[]    
   technicalInterests TechnicalInterestDetails[]
 }
 
@@ -107,5 +108,20 @@ model TechnicalInterestDetails {
   interest  String   @db.VarChar(255)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model AcademicDetails {
+  id         Int      @id @default(autoincrement())
+  student    Student  @relation(fields: [studentId], references: [id])
+  studentId  Int
+  label      String
+  year       String
+  totalMarks Int
+  outOfMarks Int
+  percentage String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@unique([studentId, label])
 }
 

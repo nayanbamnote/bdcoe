@@ -5,6 +5,7 @@ import SiblingDetails from '@/components/Form/SiblingDetails'
 import StudentDetails from '@/components/Form/StudentDetails'
 import StudentProfileHeader from '@/components/Form/StudentProfileHeader'
 import MaxWidthWrapper from '@/components/MaxWidthWrapper'
+import AcademicsTable from '@/components/Form/AcademicsTable'
 import { ShieldAlert } from 'lucide-react'
 import React from 'react'
 import HobbyDetails from '@/components/Form/HobbyDetails'
@@ -39,10 +40,9 @@ const page = () => {
         <Divider />
         <HobbyDetails />
         <Divider />
-        {/*
-        <AcadamicsTable />
+        <AcademicsTable />
         <Divider />
-        <ScholarshipDetails />
+        {/*<ScholarshipDetails />
         <Divider />
         <HostelDetails /> 
         */}
