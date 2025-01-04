@@ -15,7 +15,7 @@ import { useAuth } from "@clerk/nextjs";
 import { ShieldAlert } from "lucide-react";
 import { useEffect, useState } from "react";
 
- function StudentInfoForm() {
+   function StudentInfoForm() {
   const { userId } = useAuth();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
