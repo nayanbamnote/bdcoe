@@ -23,6 +23,7 @@ model Student {
   scholarship       Scholarship?
   hostel           Hostel?
   scholarshipDetails ScholarshipDetails[]
+  hostelDetails   HostelDetails[]
 }
 
 model StudentProfile {
@@ -157,6 +158,21 @@ model ScholarshipDetails {
   amount       String
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
+
+  @@unique([studentId, year])
+}
+
+model HostelDetails {
+  id              Int      @id @default(autoincrement())
+  student         Student  @relation(fields: [studentId], references: [id])
+  studentId       Int
+  year            String
+  academicYear    String
+  roomDetails     String
+  partnerDetails  String
+  transportation  String
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 
   @@unique([studentId, year])
 }
