@@ -22,6 +22,7 @@ model Student {
   technicalInterests TechnicalInterestDetails[]
   scholarship       Scholarship?
   hostel           Hostel?
+  scholarshipDetails ScholarshipDetails[]
 }
 
 model StudentProfile {
@@ -143,5 +144,20 @@ model Hostel {
   isHosteler Boolean  @default(false)
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
+}
+
+model ScholarshipDetails {
+  id           Int      @id @default(autoincrement())
+  student      Student  @relation(fields: [studentId], references: [id])
+  studentId    Int
+  year         String
+  academicYear String
+  type         String
+  criteria     String
+  amount       String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@unique([studentId, year])
 }
 
