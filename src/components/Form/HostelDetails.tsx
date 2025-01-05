@@ -3,14 +3,42 @@ import React, { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import TableWrapper from "./shared/TableWrapper";
 import TableContent from "./shared/TableContent";
+import { z } from "zod";
 
-interface HostelDetail {
-  year: string;
-  academicYear: string;
-  roomDetails: string;
-  partnerDetails: string;
-  transportation: string;
-}
+// Add Zod schema
+const hostelDetailSchema = z.object({
+  year: z.string(),
+  academicYear: z.string()
+    .regex(/^\d{4}-\d{2}$/, "Academic Year must be in YYYY-YY format (e.g., 2024-25)")
+    .refine(
+      (year) => {
+        const [startYear, endYear] = year.split('-');
+        const start = parseInt(startYear);
+        const end = parseInt(endYear);
+        const currentYear = new Date().getFullYear();
+        return start >= 1900 && 
+               start <= currentYear + 4 && // Allow future years for upcoming terms
+               end === parseInt(startYear.slice(2)) + 1;
+      },
+      "Invalid academic year format. Example: 2024-25"
+    ),
+  roomDetails: z.string()
+    .regex(/^[A-Za-z0-9\s,-]+$/, "Room details can only contain letters, numbers, spaces, commas and hyphens")
+    .min(1, "Room details are required")
+    .max(50, "Room details too long"),
+  partnerDetails: z.string()
+    .regex(/^[A-Za-z\s.]+$/, "Partner name can only contain letters, spaces and dots")
+    .min(1, "Partner name is required")
+    .max(100, "Partner name too long"),
+  transportation: z.string()
+    .regex(/^[A-Za-z0-9\s/-]+$/, "Transportation details can only contain letters, numbers, spaces, slashes and hyphens")
+    .min(1, "Transportation details are required")
+    .max(50, "Transportation details too long")
+});
+
+const hostelDetailsArraySchema = z.array(hostelDetailSchema);
+
+type HostelDetail = z.infer<typeof hostelDetailSchema>;
 
 const HOSTEL_YEARS = [
   "First Year",
@@ -81,21 +109,67 @@ const HostelDetails: React.FC = () => {
   ) => {
     setHostelDetails((prev) => {
       const updated = [...prev];
-      updated[index] = {
-        ...updated[index],
-        [field]: value,
-      };
-      return updated;
+      const updatedDetail = { ...updated[index] };
+
+      try {
+        if (field === "academicYear") {
+          if (value === "") {
+            updatedDetail.academicYear = "";
+          } else {
+            let formattedValue = value.replace(/\D/g, '');
+            if (formattedValue.length >= 4) {
+              const yearStart = formattedValue.slice(0, 4);
+              const yearEnd = parseInt(yearStart.slice(2)) + 1;
+              formattedValue = `${yearStart}-${yearEnd.toString().padStart(2, '0')}`;
+            }
+            
+            if (formattedValue.length === 7) {
+              hostelDetailSchema.shape.academicYear.parse(formattedValue);
+            }
+            updatedDetail.academicYear = formattedValue;
+          }
+        } else {
+          // Validate other fields
+          hostelDetailSchema.shape[field as keyof HostelDetail].parse(value);
+          updatedDetail[field as keyof HostelDetail] = value;
+        }
+
+        updated[index] = updatedDetail;
+        return updated;
+      } catch (error) {
+        if (error instanceof z.ZodError) {
+          toast({
+            title: "Invalid Input",
+            description: error.errors[0].message,
+            variant: "destructive",
+          });
+        } else if (error instanceof Error) {
+          toast({
+            title: "Invalid Input",
+            description: error.message,
+            variant: "destructive",
+          });
+        }
+        return prev;
+      }
     });
   };
 
   const handleSave = async () => {
     setIsSaving(true);
     try {
+      // Validate all hostel details before saving
+      const validatedData = hostelDetailsArraySchema.parse(hostelDetails);
+
+      // Filter out empty rows (rows with only the year field filled)
+      const nonEmptyData = validatedData.filter(detail => 
+        detail.academicYear || detail.roomDetails || detail.partnerDetails || detail.transportation
+      );
+
       const response = await fetch("/api/hostel-details", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(hostelDetails),
+        body: JSON.stringify(nonEmptyData),
       });
 
       if (!response.ok) throw new Error("Failed to save changes");
@@ -106,9 +180,17 @@ const HostelDetails: React.FC = () => {
       });
       setIsEditing(false);
     } catch (error) {
+      let errorMessage = "Failed to save changes";
+      
+      if (error instanceof z.ZodError) {
+        errorMessage = error.errors[0].message;
+      } else if (error instanceof Error) {
+        errorMessage = error.message;
+      }
+
       toast({
         title: "Error",
-        description: "Failed to save changes",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {

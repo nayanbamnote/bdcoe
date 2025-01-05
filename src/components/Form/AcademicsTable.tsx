@@ -3,14 +3,38 @@ import React, { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import TableWrapper from "./shared/TableWrapper";
 import TableContent from "./shared/TableContent";
+import { z } from "zod";
 
-interface AcademicDetail {
-  label: string;
-  year: string;
-  totalMarks: number;
-  outOfMarks: number;
-  percentage: string;
-}
+const academicDetailSchema = z.object({
+  label: z.string(),
+  year: z.string()
+    .regex(/^\d{4}-\d{2}$/, "Year must be in YYYY-YY format (e.g., 2024-25)")
+    .refine(
+      (year) => {
+        const [startYear, endYear] = year.split('-');
+        const start = parseInt(startYear);
+        const end = parseInt(endYear);
+        const currentYear = new Date().getFullYear();
+        return start >= 1900 && 
+               start <= currentYear && 
+               end === parseInt(startYear.slice(2)) + 1;
+      },
+      "Invalid year format. Example: 2024-25"
+    )
+    .optional()
+    .or(z.literal("")),
+  totalMarks: z.number()
+    .min(0, "Total marks must be positive")
+    .max(800, "Maximum marks allowed is 800"),
+  outOfMarks: z.number()
+    .min(0, "Out of marks must be positive")
+    .max(800, "Maximum marks allowed is 800"),
+  percentage: z.string(),
+});
+
+const academicDetailsArraySchema = z.array(academicDetailSchema);
+
+type AcademicDetail = z.infer<typeof academicDetailSchema>;
 
 const ACADEMIC_LABELS = [
   "SSC",
@@ -27,7 +51,7 @@ const ACADEMIC_LABELS = [
 
 const ACADEMIC_COLUMNS = [
   { header: "Examination", key: "label" },
-  { header: "Year", key: "year", placeholder: "YYYY" },
+  { header: "Year", key: "year", placeholder: "YYYY-YY" },
   { header: "Marks Obtained", key: "totalMarks", type: "number", placeholder: "0" },
   { header: "Out Of", key: "outOfMarks", type: "number", placeholder: "0" },
   { header: "Percentage", key: "percentage" }
@@ -89,28 +113,79 @@ const AcademicsTable: React.FC = () => {
       const updated = [...prev];
       const updatedDetail = { ...updated[index] };
 
-      if (field === "totalMarks" || field === "outOfMarks") {
-        (updatedDetail as any)[field] = parseInt(value) || 0;
-        if (updatedDetail.outOfMarks > 0) {
-          const percentage = (updatedDetail.totalMarks / updatedDetail.outOfMarks) * 100;
-          updatedDetail.percentage = percentage.toFixed(2);
-        }
-      } else {
-        (updatedDetail as any)[field] = value;
-      }
+      try {
+        if (field === "totalMarks" || field === "outOfMarks") {
+          const numValue = parseInt(value) || 0;
+          academicDetailSchema.shape[field].parse(numValue);
 
-      updated[index] = updatedDetail;
-      return updated;
+          if (field === "totalMarks" && numValue > updatedDetail.outOfMarks && updatedDetail.outOfMarks !== 0) {
+            throw new Error("Marks obtained cannot be greater than out of marks");
+          }
+          
+          (updatedDetail as any)[field] = numValue;
+          
+          if (updatedDetail.outOfMarks > 0) {
+            const percentage = (updatedDetail.totalMarks / updatedDetail.outOfMarks) * 100;
+            updatedDetail.percentage = percentage.toFixed(2);
+          }
+        } else if (field === "year") {
+          if (value === "") {
+            updatedDetail.year = "";
+          } else {
+            let formattedValue = value.replace(/\D/g, '');
+            if (formattedValue.length >= 4) {
+              const yearStart = formattedValue.slice(0, 4);
+              const yearEnd = parseInt(yearStart.slice(2)) + 1;
+              formattedValue = `${yearStart}-${yearEnd.toString().padStart(2, '0')}`;
+            }
+            
+            if (formattedValue.length === 7) {
+              academicDetailSchema.shape.year.parse(formattedValue);
+            }
+            updatedDetail.year = formattedValue;
+          }
+        } else {
+          (updatedDetail as any)[field] = value;
+        }
+
+        updated[index] = updatedDetail;
+        return updated;
+      } catch (error) {
+        if (error instanceof z.ZodError) {
+          toast({
+            title: "Invalid Input",
+            description: error.errors[0].message,
+            variant: "destructive",
+          });
+        } else if (error instanceof Error) {
+          toast({
+            title: "Invalid Input",
+            description: error.message,
+            variant: "destructive",
+          });
+        }
+        return prev;
+      }
     });
   };
 
   const handleSave = async () => {
     setIsSaving(true);
     try {
+      const validatedData = academicDetailsArraySchema.parse(academicDetails);
+
+      const invalidEntries = validatedData.filter(
+        (detail) => detail.totalMarks > detail.outOfMarks
+      );
+
+      if (invalidEntries.length > 0) {
+        throw new Error("Total marks cannot be greater than out of marks");
+      }
+
       const response = await fetch("/api/academic-details", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(academicDetails),
+        body: JSON.stringify(validatedData),
       });
 
       if (!response.ok) throw new Error("Failed to save changes");
@@ -121,9 +196,17 @@ const AcademicsTable: React.FC = () => {
       });
       setIsEditing(false);
     } catch (error) {
+      let errorMessage = "Failed to save changes";
+      
+      if (error instanceof z.ZodError) {
+        errorMessage = error.errors[0].message;
+      } else if (error instanceof Error) {
+        errorMessage = error.message;
+      }
+
       toast({
         title: "Error",
-        description: "Failed to save changes",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {
