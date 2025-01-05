@@ -69,8 +69,34 @@ const SiblingDetails: React.FC = () => {
     setSiblings((prev) => [...prev, { ...emptySibling }]);
   };
 
-  const handleRemoveSibling = (index: number) => {
-    setSiblings((prev) => prev.filter((_, i) => i !== index));
+  const handleRemoveSibling = async (index: number) => {
+    setIsSaving(true);
+    try {
+      const updatedSiblings = siblings.filter((_, i) => i !== index);
+      
+      const response = await fetch("/api/siblings", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ siblings: updatedSiblings }),
+      });
+
+      if (!response.ok) throw new Error("Failed to delete sibling");
+
+      setSiblings(updatedSiblings);
+      
+      toast({
+        title: "Success",
+        description: "Sibling removed successfully",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to remove sibling",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const handleInputChange = (index: number, field: keyof SiblingDetail, value: string) => {
@@ -227,8 +253,13 @@ const SiblingDetails: React.FC = () => {
                     size="icon"
                     onClick={() => handleRemoveSibling(index)}
                     className="mt-[8px] hover:bg-red-50"
+                    disabled={isSaving}
                   >
-                    <Trash2 className="h-[16px] w-[16px] text-red-500" />
+                    {isSaving ? (
+                      <Loader2 className="h-[16px] w-[16px] animate-spin" />
+                    ) : (
+                      <Trash2 className="h-[16px] w-[16px] text-red-500" />
+                    )}
                   </Button>
                 )}
               </Card>

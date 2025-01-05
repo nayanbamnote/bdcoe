@@ -2,12 +2,11 @@ import React from "react";
 import Link from "next/link";
 import { SignedIn, UserButton, SignedOut } from "@clerk/nextjs";
 
-import "@/css/animate.css";
 import "@/css/bootstrap.min.css";
-import "@/css/font-awesome.min.css";
+// import "@/css/font-awesome.min.css";
 import "@/css/meanmenu.css";
 import "@/css/one.css";
-import "@/css/style.css";
+// import "@/css/style.css";
 
 interface NavItem {
   label: string;

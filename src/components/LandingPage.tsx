@@ -2,9 +2,7 @@
 import React from "react";
 import { useInView } from "react-intersection-observer";
 import MaxWidthWrapper from "./MaxWidthWrapper";
-import "@/css/animate.css";
 import "@/css/bootstrap.min.css";
-import "@/css/font-awesome.min.css";
 import "@/css/meanmenu.css";
 import "@/css/one.css";
 import "@/css/style.css";
