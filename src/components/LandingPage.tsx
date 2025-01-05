@@ -1,3 +1,4 @@
+/* Om connection with backend */
 "use client";
 import React from "react";
 import { useInView } from "react-intersection-observer";
