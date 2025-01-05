@@ -1,11 +1,10 @@
 import React from "react";
+import MapComponent from "./MapComponent";
 
 const Footer = () => {
   return (
     <div>
-      <div className="footer-wrapper">
-        <div className="container">
-          <div className="row">
+      <div className="footer-wrapper flex justify-around items-center mx-auto gap-[25px]">
             <div className="col-md-3 col-sm-12">
               <div className="fo-one">
                 <h3>Get in touch</h3>
@@ -34,122 +33,7 @@ const Footer = () => {
                 </span>
               </div>
             </div>
-            {/* <div className="col-md-3 col-sm-12">
-            <div className="fo-two">
-              <h3>Recent Posts</h3>
-              <div className="fo-posts">
-                <div className="image-left">
-                  <img src="images/post-img1.jpg" alt="" />
-                </div>
-                <div className="text-box-right">
-                  <h4>
-                    <a href="#">Mark Warren</a>
-                  </h4>
-                  <p>Lorem ipsum dolor sit</p>
-                  <div className="post-info">
-                    {" "}
-                    <span>By John Doe</span>
-                    <span>May 15</span>{" "}
-                  </div>
-                </div>
-              </div>
-              <div className="line"></div>
-              <div className="fo-posts">
-                <div className="image-left">
-                  <img src="images/post-img2.jpg" alt="" />
-                </div>
-                <div className="text-box-right">
-                  <h4>
-                    <a href="#">Mark Warren</a>
-                  </h4>
-                  <p>Lorem ipsum dolor sit</p>
-                  <div className="post-info">
-                    {" "}
-                    <span>By John Doe</span>
-                    <span>May 15</span>{" "}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="col-md-3 col-sm-12">
-            <div className="fo-three">
-              <h3>Tags</h3>
-              <ul className="footer-tags">
-                <li>
-                  <a href="">Responsive</a>
-                </li>
-                <li>
-                  <a href="">About</a>
-                </li>
-                <li>
-                  <a href="">Tabs</a>
-                </li>
-                <li>
-                  <a href="">Tables</a>
-                </li>
-                <li>
-                  <a className="active" href="">
-                    Design
-                  </a>
-                </li>
-                <li>
-                  <a href="">Servces</a>
-                </li>
-                <li>
-                  <a href="">Blog</a>
-                </li>
-                <li>
-                  <a href="">Gallery</a>
-                </li>
-                <li>
-                  <a href="">Animation</a>
-                </li>
-                <li>
-                  <a href="">Pages</a>
-                </li>
-              </ul>
-            </div>
-          </div>
-          <div className="col-md-3 col-sm-12">
-            <div className="fo-four">
-              <h3>Gallery</h3>
-              <ul className="fo-gal">
-                <li>
-                  <a href="">
-                    <img src="images/post-img1.jpg" alt="" />
-                  </a>
-                </li>
-                <li>
-                  <a href="">
-                    <img src="images/post-img2.jpg" alt="" />
-                  </a>
-                </li>
-                <li>
-                  <a href="">
-                    <img src="images/post-img1.jpg" alt="" />
-                  </a>
-                </li>
-                <li>
-                  <a href="">
-                    <img src="images/post-img2.jpg" alt="" />
-                  </a>
-                </li>
-                <li>
-                  <a href="">
-                    <img src="images/post-img1.jpg" alt="" />
-                  </a>
-                </li>
-                <li>
-                  <a href="">
-                    <img src="images/post-img2.jpg" alt="" />
-                  </a>
-                </li>
-              </ul>
-            </div>
-          </div> */}
-          </div>
-        </div>
+            <MapComponent/>
       </div>
       <div className="copyright-wrapper">
         <div className="container">
