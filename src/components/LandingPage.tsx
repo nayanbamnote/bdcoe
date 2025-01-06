@@ -1,9 +1,9 @@
 /* Om connection with backend */
 "use client";
 import React from "react";
-import { useInView } from "react-intersection-observer";
-import MaxWidthWrapper from "./MaxWidthWrapper";
+import "@/css/animate.css";
 import "@/css/bootstrap.min.css";
+import "@/css/font-awesome.min.css";
 import "@/css/meanmenu.css";
 import "@/css/one.css";
 import "@/css/style.css";
@@ -22,13 +22,13 @@ const LandingPage = () => {
 
   return (
     <section>
-      <Banner />
-      <Callouts />
-      <About />
-      <Team />
-      <Satisfied />
-      <Testimonials />
-      <Course />
+      <Banner /> {/* nayan */}
+      <Callouts /> {/* nayan: callouts, om: callbox */}
+      <About /> {/* nayan */}
+      <Team /> {/* om */}
+      <Satisfied /> {/* om */}
+      <Testimonials /> {/* om */}
+      <Course /> {/* nayan */}
       <Footer />
     </section>
   );
