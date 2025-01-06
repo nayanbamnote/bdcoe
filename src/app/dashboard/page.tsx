@@ -5,10 +5,27 @@ import { redirect } from "next/navigation";
 import { useEffect, useState } from "react";
 import { isAdmin } from "@/utils/adminUtils";
 import StudentTable from "@/components/Dashboard/StudentTable";
-import type { Student, StudentProfile } from "@prisma/client";
+import type { 
+  Student, 
+  StudentProfile, 
+  AcademicInfo, 
+  AdditionalStudentDetails, 
+  GuardianDetails 
+} from "@prisma/client";
 
 type StudentWithProfile = Student & {
   profile: StudentProfile | null;
+  academic: AcademicInfo | null;
+  additionalDetails: AdditionalStudentDetails | null;
+  guardianDetails: GuardianDetails | null;
+  siblings: any[];
+  hobbies: any[];
+  academicDetails: any[];
+  technicalInterests: any[];
+  scholarship: any | null;
+  hostel: any | null;
+  scholarshipDetails: any[];
+  hostelDetails: any[];
 };
 
 const DashboardPage = () => {

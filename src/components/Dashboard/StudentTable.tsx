@@ -130,9 +130,12 @@ const StudentTable = ({ students }: StudentTableProps) => {
               <h3 className="font-semibold mb-[8px]">Guardian Details</h3>
               {student.guardianDetails ? (
                 <>
-                  <p>Name: {student.guardianDetails.name || "N/A"}</p>
-                  <p>Relation: {student.guardianDetails.relation || "N/A"}</p>
-                  <p>Contact: {student.guardianDetails.phone || "N/A"}</p>
+                  <p>Father's Name: {student.guardianDetails.fatherName || "N/A"}</p>
+                  <p>Father's Contact: {student.guardianDetails.fatherContact || "N/A"}</p>
+                  <p>Mother's Name: {student.guardianDetails.motherName || "N/A"}</p>
+                  <p>Mother's Contact: {student.guardianDetails.motherContact || "N/A"}</p>
+                  <p>Father's Occupation: {student.guardianDetails.fatherOccupation || "N/A"}</p>
+                  <p>Mother's Occupation: {student.guardianDetails.motherOccupation || "N/A"}</p>
                 </>
               ) : (
                 <p>No guardian details available</p>
