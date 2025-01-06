@@ -16,8 +16,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ClerkProvider>
+
     <html lang="en">
+          <ClerkProvider>
       <body
         className={`${recursive.className} antialiased flex flex-col`}
       >
@@ -25,7 +26,8 @@ export default function RootLayout({
         {children}
         <Toaster />
       </body>
-    </html>
+      
     </ClerkProvider>
+    </html>
   );
 }

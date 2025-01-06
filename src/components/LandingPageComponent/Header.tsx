@@ -56,7 +56,7 @@ const Header = () => {
                 <div className="navbar-header">
                   <a className="navbar-brand" href="/">
                     <img
-                      src="images/bd-logo2.png"
+                      src="/bd-logo2.png"
                       className="logo-change max-w-[330px]"
                       alt="BDCOE"
                     />
