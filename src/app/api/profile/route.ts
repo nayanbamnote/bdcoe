@@ -63,7 +63,7 @@ export async function PUT(req: Request) {
       },
     });
 
-    // Update or create profile
+    // Update or create profile with imageUrl
     const profile = await prisma.studentProfile.upsert({
       where: {
         studentId: student.id,
