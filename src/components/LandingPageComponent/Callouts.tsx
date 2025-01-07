@@ -3,7 +3,7 @@ import { Clapperboard, Handshake, MonitorCog } from "lucide-react";
 import VisionMission from './VisionMission';
 
 interface CalloutItem {
-  icon: React.ReactNode;
+  icon: React.ReactNode ;
   title: string;
   description: string;
 }
@@ -45,7 +45,7 @@ const CalloutBox: React.FC<CalloutItem> = ({ icon, title, description }) => (
   <div className="col-sm-6 col-md-4">
     <div className="callouts">
       <div className="callouts-box text-center">
-        <div className="icon-box" style={icon.type !== 'i' ? { width: "30px", height: "30px", color: "#3eb2ce" } : undefined}>
+        <div className="icon-box" style={React.isValidElement(icon) && icon.type !== 'i' ? { width: "30px", height: "30px", color: "#3eb2ce" } : undefined}>
           {icon}
         </div>
         <div className="box-header">

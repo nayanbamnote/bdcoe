@@ -1,5 +1,6 @@
 'use server'
-export const isAdmin = (email: string | null | undefined) => {
+
+export const isAdmin = async (email: string | null | undefined) => {
   if (!email) return false;
 
   // Split environment variable into an array of admin emails
