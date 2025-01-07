@@ -12,7 +12,7 @@ export async function GET() {
     }
 
     const email = user.primaryEmailAddress?.emailAddress;
-    if (!isAdmin(email)) {
+    if (!(await isAdmin(email))) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 

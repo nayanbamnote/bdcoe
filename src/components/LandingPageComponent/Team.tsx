@@ -1,4 +1,14 @@
+"use client"
+
 import React from 'react'
+import { Card, CardContent } from "@/components/ui/card"
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel"
 
 interface TeamMember {
   image: string;
@@ -38,6 +48,35 @@ const teamData: TeamMember[] = [
     email: "contactsveer@gmail.com",
     name: "Prof S. Veer",
     role: "Computer Networking"
+  },
+  {
+    image: "images/harshal.jpg",
+    phone: "+91 8623094369",
+    email: "contactsvraut@gmail.com",
+    name: "Prof S.V. Raut",
+    role: "Java Faculty"
+  },
+  {
+    image: "images/harshal.jpg",
+    phone: "+91 8087736725",
+    email: "contactroshanc@gmail.com",
+    name: "Prof R. Chaudhari",
+    role: "AI/ML Expert"
+  },
+  {
+    image: "images/harshal.jpg",
+    phone: "+91 9503141798",
+    email: "contactrmpatil@gmail.com",
+    name: "Prof R. M. Patil",
+    role: "Computer Graphics",
+    spaceClass: "space"
+  },
+  {
+    image: "images/harshal.jpg",
+    phone: "+91 7517697478",
+    email: "contactsveer@gmail.com",
+    name: "Prof S. Veer",
+    role: "Computer Networking"
   }
 ];
 
@@ -49,8 +88,8 @@ const TeamMemberCard: React.FC<TeamMember> = ({
   role,
   spaceClass 
 }) => (
-  <div className={`col-sm-6 col-md-3 ${spaceClass || ''}`}>
-    <div className="team-wrap">
+  <Card className="team-wrap">
+    <CardContent className="p-0">
       <div className="thumbnail thumbnail-model">
         <figure className="thumbnail-image">
           <img src={image} alt={name} />{" "}
@@ -77,8 +116,8 @@ const TeamMemberCard: React.FC<TeamMember> = ({
           <p className="text-caption">{role}</p>
         </div>
       </div>
-    </div>
-  </div>
+    </CardContent>
+  </Card>
 );
 
 const Team = () => {
@@ -95,9 +134,26 @@ const Team = () => {
               minds.
             </p>
           </div>
-          {teamData.map((member, index) => (
-            <TeamMemberCard key={index} {...member} />
-          ))}
+          
+          <Carousel
+            opts={{
+              align: "start",
+              loop: true,
+            }}
+            className="w-full"
+          >
+            <CarouselContent className="-ml-4">
+              {teamData.map((member, index) => (
+                <CarouselItem key={index} className="pl-4 basis-full md:basis-1/2 lg:basis-1/4">
+                  <div className="p-1">
+                    <TeamMemberCard {...member} />
+                  </div>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            <CarouselPrevious />
+            <CarouselNext />
+          </Carousel>
         </div>
       </div>
     </div>
