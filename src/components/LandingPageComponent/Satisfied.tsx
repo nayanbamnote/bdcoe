@@ -1,44 +1,58 @@
+'use client'
+
 import React from 'react'
-import CountUp from "react-countup";
-import { useInView } from "react-intersection-observer";
+import CountUp from "react-countup"
+import { useInView } from "react-intersection-observer"
+
 
 const stats = [
-    { number: 10, label: "Teachers" },
-    { number: 3, label: "Courses" },
-    { number: 350, label: "Students" },
-    { number: 361, label: "Recruited" },
-  ];
-const Satisfied = () => {
-    const { ref, inView } = useInView({
-        triggerOnce: true, // Ensures the animation triggers only once
-        threshold: 1, // Start the animation when 50% of the component is visible
-      });
+  { number: 10, label: "Teachers" },
+  { number: 3, label: "Courses" },
+  { number: 350, label: "Students" },
+  { number: 361, label: "Recruited" },
+]
+
+const ResponsiveCounter = () => {
+  const { ref, inView } = useInView({
+    triggerOnce: true,
+    threshold: 1,
+  })
+
   return (
     <div
-        ref={ref}
-        className="satisfied-wrapper bg-gray-50 py-12 flex justify-center items-center"
+      ref={ref}
+      style={{ backgroundImage: "url('/images/count-number-bg.png')" }}
+      className="bg-[#f9fafb] p-[48px_16px] flex justify-center items-center bg-cover bg-center"                                      
+    >
+      <div
+      
+        className="w-full max-w-[1200px] mx-auto grid grid-cols-2 sm:grid-cols-4 gap-[24px]"
       >
-        <div className="container mx-auto flex flex-wrap justify-evenly gap-14 text-center">
-          {stats.map((stat, index) => (
+        {stats.map((stat, index) => (
+          <div
+            key={index}
+            className="flex flex-col justify-center items-center text-center p-[16px] rounded-[8px] bg-transparent shadow-[0_4px_6px_rgba(0,0,0,0.1)]"
+          >
             <div
-              key={index}
-              className="counter flex flex-col justify-center items-center text-center w-40"
+              className="text-[50px] font-bold text-[#ffffff] mb-[8px]"
             >
-              <div className="number text-4xl font-bold text-primary">
-                {inView ? (
-                  <CountUp start={0} end={stat.number} duration={2.5} />
-                ) : (
-                  0
-                )}
-              </div>
-              <p className="text-lg font-medium text-gray-600 !mt-[16px]">
-                {stat.label}
-              </p>
+              {inView ? (
+                <CountUp start={0} end={stat.number} duration={2.5} />
+              ) : (
+                0
+              )}
             </div>
-          ))}
-        </div>
+            <p
+              className="text-[16px] font-[500] text-[#ffffff]"
+            >
+              {stat.label}
+            </p>
+          </div>
+        ))}
       </div>
+    </div>
   )
 }
 
-export default Satisfied
+export default ResponsiveCounter
+
