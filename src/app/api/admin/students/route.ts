@@ -8,12 +8,20 @@ export async function GET() {
     const user = await currentUser();
 
     if (!user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json(
+        { error: "Unauthorized", message: "Please sign in to access this resource" }, 
+        { status: 401 }
+      );
     }
 
     const email = user.primaryEmailAddress?.emailAddress;
-    if (!isAdmin(email)) {
-      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    const adminCheck = await isAdmin(email);
+    
+    if (!adminCheck) {
+      return NextResponse.json(
+        { error: "Forbidden", message: "You don't have permission to access this resource" }, 
+        { status: 403 }
+      );
     }
 
     const students = await prisma.student.findMany({
@@ -33,9 +41,12 @@ export async function GET() {
       },
     });
 
-    return NextResponse.json(students);
+    return NextResponse.json({ success: true, data: students });
   } catch (error) {
     console.error("[ADMIN_GET]", error);
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Internal Server Error", message: "Something went wrong" }, 
+      { status: 500 }
+    );
   }
 }
