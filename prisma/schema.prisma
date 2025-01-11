@@ -43,6 +43,7 @@ model AcademicInfo {
   id              Int      @id @default(autoincrement())
   student         Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
   studentId       Int      @unique
+  college_id      String   @unique
   rollNumber      String   @unique
   currentSemester String
   section         String

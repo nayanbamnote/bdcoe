@@ -2,7 +2,6 @@
 import React, { useState, useEffect } from 'react'
 import { useToast } from "@/hooks/use-toast"
 import { ProfileDetails } from '@/types/profile'
-import { urlToFile } from '@/utils/file-utils'
 import { saveProfileToDatabase } from '@/utils/profile-utils'
 import { ProfileImageUploader } from '@/components/Form/ProfileComponents/ProfileImageUploader'
 import { ProfileForm } from '@/components/Form/ProfileComponents/ProfileForm'
@@ -10,12 +9,28 @@ import { ProfileDisplay } from '@/components/Form/ProfileComponents/ProfileDispl
 import { ProfileActions } from '@/components/Form/ProfileComponents/ProfileActions'
 import { ProfileSkeleton } from '@/components/Form/ProfileComponents/ProfileSkeleton'
 import { useProfileImage } from '@/hooks/useProfileImage'
+import * as z from "zod"
+
+// Add validation schema
+const profileSchema = z.object({
+  name: z.string().min(2, "Name must be at least 2 characters").max(50, "Name must be less than 50 characters"),
+  email: z.string().email("Please enter a valid email address"),
+  phone: z.string()
+    .regex(/^\+?[1-9]\d{1,14}$/, "Please enter a valid phone number"),
+  location: z.string().min(2, "Location must be at least 2 characters").max(100, "Location must be less than 100 characters"),
+  imageUrl: z.string().nullable(),
+});
 
 const StudentProfileHeader = () => {
   const { toast } = useToast();
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  
+  // Add validation errors state
+  const [validationErrors, setValidationErrors] = useState<{
+    [K in keyof ProfileDetails]?: string
+  }>({});
   
   const [profileDetails, setProfileDetails] = useState<ProfileDetails>({
     name: "",
@@ -24,6 +39,66 @@ const StudentProfileHeader = () => {
     location: "",
     imageUrl: null
   });
+
+  // Add validation function
+  const validateField = (field: keyof ProfileDetails, value: string) => {
+    try {
+      profileSchema.shape[field].parse(value);
+      setValidationErrors(prev => ({
+        ...prev,
+        [field]: undefined
+      }));
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        setValidationErrors(prev => ({
+          ...prev,
+          [field]: error.errors[0].message
+        }));
+      }
+    }
+  };
+
+  const handleInputChange = (field: keyof ProfileDetails, value: string) => {
+    setProfileDetails(prev => ({
+      ...prev,
+      [field]: value
+    }));
+    validateField(field, value);
+  };
+
+  const saveChanges = async () => {
+    try {
+      // Validate all fields before saving
+      profileSchema.parse(profileDetails);
+      
+      setIsSaving(true);
+      await saveProfileToDatabase(profileDetails);
+      toast({
+        title: "Success",
+        description: "Profile updated successfully",
+      });
+      setIsEditing(false);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        // Update all validation errors
+        const errors = error.errors.reduce((acc, curr) => {
+          const field = curr.path[0] as keyof ProfileDetails;
+          acc[field] = curr.message;
+          return acc;
+        }, {} as { [K in keyof ProfileDetails]?: string });
+        
+        setValidationErrors(errors);
+      } else {
+        toast({
+          title: "Error",
+          description: "Failed to save changes",
+          variant: "destructive",
+        });
+      }
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   const { file, image, uploadProgress, handleImageUpload, setFile, setImage } = useProfileImage(
     async (imageUrl) => {
@@ -65,33 +140,6 @@ const StudentProfileHeader = () => {
 
     fetchProfile();
   }, [toast, setImage]);
-
-  const handleInputChange = (field: keyof ProfileDetails, value: string) => {
-    setProfileDetails(prev => ({
-      ...prev,
-      [field]: value
-    }));
-  };
-
-  const saveChanges = async () => {
-    setIsSaving(true);
-    try {
-      await saveProfileToDatabase(profileDetails);
-      toast({
-        title: "Success",
-        description: "Profile updated successfully",
-      });
-      setIsEditing(false);
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to save changes",
-        variant: "destructive",
-      });
-    } finally {
-      setIsSaving(false);
-    }
-  };
 
   if (isLoading) return <ProfileSkeleton />;
 
@@ -145,13 +193,17 @@ const StudentProfileHeader = () => {
               <ProfileForm
                 profileDetails={profileDetails}
                 onInputChange={handleInputChange}
+                validationErrors={validationErrors}
               />
               <div className="w-full md:w-auto">
                 <ProfileActions
                   isEditing={isEditing}
                   isSaving={isSaving}
                   onSave={saveChanges}
-                  onCancel={() => setIsEditing(false)}
+                  onCancel={() => {
+                    setIsEditing(false);
+                    setValidationErrors({});
+                  }}
                   onEdit={() => setIsEditing(true)}
                 />
               </div>

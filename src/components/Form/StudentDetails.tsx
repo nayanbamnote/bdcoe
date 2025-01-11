@@ -11,6 +11,7 @@ const StudentDetails: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [academicDetails, setAcademicDetails] = useState<AcademicDetails>({
+    college_id: "",
     rollNumber: "",
     currentSemester: "",
     section: "",
