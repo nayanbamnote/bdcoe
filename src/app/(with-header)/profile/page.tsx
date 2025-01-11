@@ -31,52 +31,58 @@ const Page = () => {
   };
 
   return (
-    <MaxWidthWrapper className="my-[48px]">
-    <h1 className="text-black33 text-xl text-center ">Student Information</h1>
-    <div className=" w-info mx-auto ">
-    <div className="w-full h-[48px] rounded-tr-lg rounded-tl-lg border border-[#ffef85] bg-[#fffaeb] text-[#945e12] flex justify-center items-center gap-2 text-base ">
-      <ShieldAlert color="#945e12" size={20}/>
-        <p className="m-0">
-        This is the student mentor/mentee form that will be seen by the faculty or admin when you apply. Please ensure it is up to date.
-        </p>
-      </div>
+    <MaxWidthWrapper className="my-[24px] md:my-[48px] px-[16px] md:px-[24px] lg:px-[32px]">
+      <h1 className="text-black33 text-[20px] md:text-[28px] text-center mb-[24px]">
+        Student Information
+      </h1>
       
-      {/* Form Starts Here  */}
-      <div className=" text-gray66 text-base border-l border-r border-b border-grayee border-t-transparent rounded-br-lg rounded-bl-lg">
-      <div className="px-[72px] py-[42px]">
-        <StudentProfileHeader />
-        <Divider />
-        <StudentDetails />
-         <Divider />
-        <AdditionalStudentDetails />
-        <Divider />
-        <SiblingDetails />
-        <Divider />
-        <GuardianDetails/>
-        <Divider />
-        <TechnicalInterestDetails />
-        <Divider />
-        <HobbyDetails />
-        <Divider />
-        <AcademicsTable />
-        <Divider />
-        <AccommodationToggle onToggleChange={handleToggleChange} />
-        <Divider />
-        {toggleStates.hasScholarship && (
-          <>
-            <ScholarshipDetails />
+      <div className="w-full md:w-[90%] lg:w-info mx-auto">
+        {/* Alert Banner */}
+        <div className="w-full min-h-[48px] p-[12px] md:p-[16px] rounded-tr-lg rounded-tl-lg border border-[#ffef85] bg-[#fffaeb] text-[#945e12] flex flex-col md:flex-row justify-center items-center gap-[8px] md:gap-[12px] text-[14px] md:text-base">
+          <ShieldAlert color="#945e12" size={20}/>
+          <p className="m-0 text-center md:text-left">
+            This is the student mentor/mentee form that will be seen by the faculty or admin when you apply. Please ensure it is up to date.
+          </p>
+        </div>
+        
+        {/* Form Container */}
+        <div className="text-gray66 text-[14px] md:text-base border-l border-r border-b border-grayee border-t-transparent rounded-br-lg rounded-bl-lg">
+          <div className="px-[16px] sm:px-[32px] md:px-[48px] lg:px-[72px] py-[24px] md:py-[32px] lg:py-[42px]">
+            <StudentProfileHeader />
             <Divider />
-          </>
-        )}
-        {toggleStates.isHosteler && (
-          <>
-            <HostelDetails />
-          </>
-        )}
+            <StudentDetails />
+            <Divider />
+            <AdditionalStudentDetails />
+            <Divider />
+            <SiblingDetails />
+            <Divider />
+            <GuardianDetails/>
+            <Divider />
+            <TechnicalInterestDetails />
+            <Divider />
+            <HobbyDetails />
+            <Divider />
+            <div className="overflow-x-auto">
+              <AcademicsTable />
+            </div>
+            <Divider />
+            <AccommodationToggle onToggleChange={handleToggleChange} />
+            <Divider />
+            {toggleStates.hasScholarship && (
+              <>
+                <ScholarshipDetails />
+                <Divider />
+              </>
+            )}
+            {toggleStates.isHosteler && (
+              <>
+                <HostelDetails />
+              </>
+            )}
+          </div>
+        </div>
       </div>
-    </div>
-    </div>
-  </MaxWidthWrapper>
+    </MaxWidthWrapper>
   )
 }
 

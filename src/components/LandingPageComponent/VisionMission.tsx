@@ -35,8 +35,10 @@ const visionData: VisionItem[] = [
   }
 ];
 
+// ... existing imports and interfaces ...
+
 const VisionCard: React.FC<VisionItem> = ({ Icon, iconSize, title, description }) => (
-  <div className="flex flex-col items-center text-center w-full sm:w-1/2 md:w-1/4 p-4 border rounded-lg shadow-lg min-h-[234px]">
+  <div className="flex flex-col items-center text-center p-4 border rounded-lg shadow-lg min-h-[234px] w-[280px]">
     <div className="text-blue-500 mb-4">
       <Icon size={iconSize} />
     </div>
@@ -49,12 +51,15 @@ const VisionCard: React.FC<VisionItem> = ({ Icon, iconSize, title, description }
 
 const VisionMission: React.FC = () => {
   return (
-    <section className="flex flex-wrap justify-center md:justify-evenly items-center gap-6 p-4">
+    <section className="flex flex-wrap justify-center gap-6 p-6">
       {visionData.map((item, index) => (
         <VisionCard key={index} {...item} />
       ))}
     </section>
   );
 };
+
+
+// ... existing export ...
 
 export default VisionMission; 

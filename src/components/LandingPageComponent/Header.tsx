@@ -1,12 +1,9 @@
+'use client'
+
 import React from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { SignedIn, UserButton, SignedOut } from "@clerk/nextjs";
-
-import "@/css/bootstrap.min.css";
-// import "@/css/font-awesome.min.css";
-import "@/css/meanmenu.css";
-import "@/css/one.css";
-// import "@/css/style.css";
 
 interface NavItem {
   label: string;
@@ -27,56 +24,48 @@ const navigationItems: NavItem[] = [
 ];
 
 const NavLink: React.FC<NavItem> = ({ label, href, isActive }) => (
-  <li className={isActive ? "active" : ""}>
-    <a href={href}>{label}</a>
+  <li className={`${isActive ? "text-blue-600" : "text-gray-700"} hover:text-blue-500`}>
+    <Link href={href}>{label}</Link>
   </li>
 );
 
 const AuthSection: React.FC = () => (
   <li>
     <SignedIn>
-      <div className="p-1 bg-slate-400 rounded-lg transform scale-150 flex justify-center items-center">
+      <div className="p-1 bg-slate-200 rounded-lg transform scale-125 flex justify-center items-center">
         <UserButton />
       </div>
     </SignedIn>
     <SignedOut>
-      <Link href="/sign-in">Login</Link>
+      <Link href="/sign-in" className="text-gray-700 hover:text-blue-500">Login</Link>
     </SignedOut>
   </li>
 );
 
-const Header = () => {
+const Header: React.FC = () => {
   return (
-    <header className="wow fadeInDown" data-offset-top="197" data-spy="affix">
-      <div className="logo-bar">
-        <div className="container">
-          <div className="row">
-            <div className="col-md-12 col-sm-12 col-xs-12 mainmenu-area">
-              <nav className="navbar navbar-default mean-nav">
-                <div className="navbar-header">
-                  <a className="navbar-brand" href="/">
-                    <img
-                      src="/bd-logo2.png"
-                      className="logo-change max-w-[330px]"
-                      alt="BDCOE"
-                    />
-                  </a>{" "}
-                </div>
-
-                <div
-                  className="navbar-collapse !visible"
-                  id="bs-example-navbar-collapse-1"
-                >
-                  <ul className="mobile-menu nav navbar-nav">
-                    {navigationItems.map((item, index) => (
-                      <NavLink key={index} {...item} />
-                    ))}
-                    <AuthSection />
-                  </ul>
-                </div>
-              </nav>
-            </div>
+    <header className="bg-white shadow-md">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between items-center py-4">
+          <div className="flex items-center">
+            <Link href="/" className="flex-shrink-0">
+              <Image
+                src="/bd-logo2.png"
+                alt="BDCOE"
+                width={330}
+                height={50}
+                className="h-auto w-auto max-w-[200px] sm:max-w-[250px] md:max-w-[330px]"
+              />
+            </Link>
           </div>
+          <nav className="flex">
+            <ul className="flex space-x-8">
+              {navigationItems.map((item, index) => (
+                <NavLink key={index} {...item} />
+              ))}
+              <AuthSection />
+            </ul>
+          </nav>
         </div>
       </div>
     </header>
@@ -84,3 +73,4 @@ const Header = () => {
 };
 
 export default Header;
+

@@ -60,12 +60,12 @@ const config: Config = {
   			sm: 'calc(var(--radius) - 4px)'
   		},
 		  width: {
-			  info: '940px', // Added maxWidth configuration
+			  info: '940px',
 		  },
 		  fontSize: {
-			sm: '12px', // Small font size
-			base: '14px', // Base font size
-			xl: '28px', // Extra large font size
+			sm: '12px',
+			base: '14px',
+			xl: '28px',
 		},
   	}
   },

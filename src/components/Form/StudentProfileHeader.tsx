@@ -97,15 +97,56 @@ const StudentProfileHeader = () => {
 
   if (!profileDetails.name && !isEditing) {
     return (
-      <div className="flex justify-between items-center p-[16px] bg-white rounded-[8px]">
-        <div className="flex items-center space-x-[16px] w-full">
-          <div className="flex-grow">
-            <div className="space-y-[16px]">
-              <div className="flex items-center justify-between">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center p-[12px] md:p-[16px] bg-white rounded-[8px]">
+        <div className="flex flex-col md:flex-row items-start md:items-center gap-[16px] w-full">
+          <div className="w-full md:flex-grow order-2 md:order-1">
+            <div className="space-y-[12px] md:space-y-[16px]">
+              <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-[12px] md:gap-0">
                 <div>
-                  <p className="text-[#6B7280] italic">No profile information added yet</p>
-                  <p className="text-[14px] text-[#9CA3AF]">Click edit to add your details</p>
+                  <p className="text-[#6B7280] italic text-[14px] md:text-base">
+                    No profile information added yet
+                  </p>
+                  <p className="text-[12px] md:text-[14px] text-[#9CA3AF]">
+                    Click edit to add your details
+                  </p>
                 </div>
+                <div className="w-full md:w-auto">
+                  <ProfileActions
+                    isEditing={isEditing}
+                    isSaving={isSaving}
+                    onSave={saveChanges}
+                    onCancel={() => setIsEditing(false)}
+                    onEdit={() => setIsEditing(true)}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="order-1 md:order-2 w-full md:w-auto flex justify-center md:justify-end">
+            <ProfileImageUploader
+              file={file}
+              image={image}
+              isLoading={isLoading}
+              onImageUpload={handleImageUpload}
+              uploadProgress={uploadProgress}
+            />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex flex-col md:flex-row justify-between items-start md:items-center p-[12px] md:p-[16px] bg-white rounded-[8px]">
+      <div className="flex flex-col md:flex-row items-start md:items-center gap-[16px] w-full">
+        <div className="w-full md:flex-grow order-2 md:order-1">
+          {isEditing ? (
+            <div className="space-y-[12px] md:space-y-[16px]">
+              <ProfileForm
+                profileDetails={profileDetails}
+                onInputChange={handleInputChange}
+              />
+              <div className="w-full md:w-auto">
                 <ProfileActions
                   isEditing={isEditing}
                   isSaving={isSaving}
@@ -115,7 +156,22 @@ const StudentProfileHeader = () => {
                 />
               </div>
             </div>
-          </div>
+          ) : (
+            <div className="space-y-[12px] md:space-y-[16px]">
+              <ProfileDisplay profileDetails={profileDetails} />
+              <div className="w-full md:w-auto">
+                <ProfileActions
+                  isEditing={isEditing}
+                  isSaving={isSaving}
+                  onSave={saveChanges}
+                  onCancel={() => setIsEditing(false)}
+                  onEdit={() => setIsEditing(true)}
+                />
+              </div>
+            </div>
+          )}
+        </div>
+        <div className="order-1 md:order-2 w-full md:w-auto flex justify-center md:justify-end">
           <ProfileImageUploader
             file={file}
             image={image}
@@ -124,37 +180,6 @@ const StudentProfileHeader = () => {
             uploadProgress={uploadProgress}
           />
         </div>
-      </div>
-    );
-  }
-
-  return (
-    <div className="flex justify-between items-center p-[16px] bg-white rounded-[8px]">
-      <div className="flex items-center space-x-[16px] w-full">
-        <div className="flex-grow">
-          {isEditing ? (
-            <ProfileForm
-              profileDetails={profileDetails}
-              onInputChange={handleInputChange}
-            />
-          ) : (
-            <ProfileDisplay profileDetails={profileDetails} />
-          )}
-        </div>
-        <ProfileActions
-          isEditing={isEditing}
-          isSaving={isSaving}
-          onSave={saveChanges}
-          onCancel={() => setIsEditing(false)}
-          onEdit={() => setIsEditing(true)}
-        />
-        <ProfileImageUploader
-          file={file}
-          image={image}
-          isLoading={isLoading}
-          onImageUpload={handleImageUpload}
-          uploadProgress={uploadProgress}
-        />
       </div>
     </div>
   );
