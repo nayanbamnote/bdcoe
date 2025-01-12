@@ -79,10 +79,8 @@ export const additionalFields: FormFieldWithValidation[] = [
   { 
     key: "bloodGroup", 
     label: "Blood Group", 
-    placeholder: "Blood Group",
-    validation: z.string()
-      .min(1, "Blood group is required")
-      .regex(/^(A|B|AB|O)[+-]$/, "Invalid blood group format (e.g., A+, B-, AB+, O-)")
+    placeholder: "Enter blood group",
+    validation: z.string().optional()
   },
   { 
     key: "addressOnAadhar", 

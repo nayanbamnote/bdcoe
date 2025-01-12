@@ -42,6 +42,7 @@ const SiblingDetails: React.FC = () => {
   const [isSaving, setIsSaving] = useState(false);
   const [siblings, setSiblings] = useState<SiblingDetail[]>([]);
   const [errors, setErrors] = useState<ValidationErrors[]>([]);
+  const [originalSiblings, setOriginalSiblings] = useState<SiblingDetail[]>([]);
 
   useEffect(() => {
     const fetchSiblings = async () => {
@@ -50,6 +51,7 @@ const SiblingDetails: React.FC = () => {
         const { data } = await response.json();
         if (data) {
           setSiblings(data);
+          setOriginalSiblings(data);
         }
       } catch (error) {
         toast({
@@ -67,6 +69,12 @@ const SiblingDetails: React.FC = () => {
 
   const handleAddSibling = () => {
     setSiblings((prev) => [...prev, { ...emptySibling }]);
+  };
+
+  const handleCancelEdit = () => {
+    setSiblings([...originalSiblings]);
+    setErrors([]);
+    setIsEditing(false);
   };
 
   const handleRemoveSibling = async (index: number) => {
@@ -165,6 +173,7 @@ const SiblingDetails: React.FC = () => {
 
       if (!response.ok) throw new Error("Failed to save changes");
 
+      setOriginalSiblings(siblings);
       toast({
         title: "Success",
         description: "Sibling details updated successfully",
@@ -285,7 +294,7 @@ const SiblingDetails: React.FC = () => {
                 <Button
                   variant="outline"
                   size="icon"
-                  onClick={() => setIsEditing(false)}
+                  onClick={handleCancelEdit}
                   className="hover:bg-red-50"
                 >
                   <X className="h-[20px] w-[20px] text-red-500" />

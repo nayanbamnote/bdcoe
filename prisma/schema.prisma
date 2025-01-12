@@ -58,7 +58,7 @@ model AdditionalStudentDetails {
   studentId        Int      @unique
   aadharNo         String   @unique
   dob              DateTime
-  bloodGroup       String
+  bloodGroup       String?
   addressOnAadhar  String
   permanentAddress String?
   casteCategory    String

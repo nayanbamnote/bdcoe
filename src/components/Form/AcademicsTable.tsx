@@ -7,22 +7,7 @@ import { z } from "zod";
 
 const academicDetailSchema = z.object({
   label: z.string(),
-  year: z.string()
-    .regex(/^\d{4}-\d{2}$/, "Year must be in YYYY-YY format (e.g., 2024-25)")
-    .refine(
-      (year) => {
-        const [startYear, endYear] = year.split('-');
-        const start = parseInt(startYear);
-        const end = parseInt(endYear);
-        const currentYear = new Date().getFullYear();
-        return start >= 1900 && 
-               start <= currentYear && 
-               end === parseInt(startYear.slice(2)) + 1;
-      },
-      "Invalid year format. Example: 2024-25"
-    )
-    .optional()
-    .or(z.literal("")),
+  year: z.string().optional().or(z.literal("")),
   totalMarks: z.number()
     .min(0, "Total marks must be positive")
     .max(800, "Maximum marks allowed is 800"),
@@ -132,17 +117,8 @@ const AcademicsTable: React.FC = () => {
           if (value === "") {
             updatedDetail.year = "";
           } else {
-            let formattedValue = value.replace(/\D/g, '');
-            if (formattedValue.length >= 4) {
-              const yearStart = formattedValue.slice(0, 4);
-              const yearEnd = parseInt(yearStart.slice(2)) + 1;
-              formattedValue = `${yearStart}-${yearEnd.toString().padStart(2, '0')}`;
-            }
-            
-            if (formattedValue.length === 7) {
-              academicDetailSchema.shape.year.parse(formattedValue);
-            }
-            updatedDetail.year = formattedValue;
+            const cleanValue = value.replace(/[^\d-]/g, '');
+            updatedDetail.year = cleanValue.slice(0, 7);
           }
         } else {
           (updatedDetail as any)[field] = value;

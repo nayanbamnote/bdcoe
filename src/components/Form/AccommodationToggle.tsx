@@ -3,6 +3,7 @@ import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
+import { Loader2 } from "lucide-react";
 
 interface AccommodationToggles {
   hasScholarship: boolean;
@@ -17,6 +18,10 @@ const AccommodationToggle: React.FC<AccommodationToggleProps> = ({ onToggleChang
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(true);
   const [toggles, setToggles] = useState<AccommodationToggles>({
+    hasScholarship: false,
+    isHosteler: false,
+  });
+  const [loadingStates, setLoadingStates] = useState({
     hasScholarship: false,
     isHosteler: false,
   });
@@ -65,13 +70,14 @@ const AccommodationToggle: React.FC<AccommodationToggleProps> = ({ onToggleChang
   }, [fetchToggles]);
 
   const handleToggleChange = useCallback(async (field: keyof AccommodationToggles) => {
+    // Set loading state for the specific toggle
+    setLoadingStates(prev => ({ ...prev, [field]: true }));
+    
     const newValue = !toggles[field];
     const newToggles = { ...toggles, [field]: newValue };
-    
     const endpoint = field === 'hasScholarship' ? '/api/scholarship' : '/api/hostel';
     
     try {
-      // First update the toggle state
       const response = await fetch(endpoint, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
@@ -80,7 +86,6 @@ const AccommodationToggle: React.FC<AccommodationToggleProps> = ({ onToggleChang
 
       if (!response.ok) throw new Error("Failed to update");
 
-      // If toggling off, delete the corresponding details
       if (!newValue) {
         const deleteEndpoint = field === 'hasScholarship' 
           ? '/api/scholarship-details/delete' 
@@ -106,7 +111,9 @@ const AccommodationToggle: React.FC<AccommodationToggleProps> = ({ onToggleChang
         description: "Failed to update status",
         variant: "destructive",
       });
-      // Don't update state if the API call fails
+    } finally {
+      // Reset loading state
+      setLoadingStates(prev => ({ ...prev, [field]: false }));
     }
   }, [toggles, toast]);
 
@@ -120,22 +127,34 @@ const AccommodationToggle: React.FC<AccommodationToggleProps> = ({ onToggleChang
         <Label htmlFor="scholarship-toggle" className="text-[16px]">
           Have you received any scholarship?
         </Label>
-        <Switch
-          id="scholarship-toggle"
-          checked={toggles.hasScholarship}
-          onCheckedChange={() => handleToggleChange('hasScholarship')}
-        />
+        <div className="flex items-center gap-2">
+          {loadingStates.hasScholarship && (
+            <Loader2 className="h-4 w-4 animate-spin" />
+          )}
+          <Switch
+            id="scholarship-toggle"
+            checked={toggles.hasScholarship}
+            onCheckedChange={() => handleToggleChange('hasScholarship')}
+            disabled={loadingStates.hasScholarship}
+          />
+        </div>
       </div>
 
       <div className="flex items-center justify-between px-[16px] py-[8px] bg-gray-50 rounded-lg">
         <Label htmlFor="hostel-toggle" className="text-[16px]">
           Are you a hosteler?
         </Label>
-        <Switch
-          id="hostel-toggle"
-          checked={toggles.isHosteler}
-          onCheckedChange={() => handleToggleChange('isHosteler')}
-        />
+        <div className="flex items-center gap-2">
+          {loadingStates.isHosteler && (
+            <Loader2 className="h-4 w-4 animate-spin" />
+          )}
+          <Switch
+            id="hostel-toggle"
+            checked={toggles.isHosteler}
+            onCheckedChange={() => handleToggleChange('isHosteler')}
+            disabled={loadingStates.isHosteler}
+          />
+        </div>
       </div>
     </div>
   );
