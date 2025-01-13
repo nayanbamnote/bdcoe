@@ -1,13 +1,12 @@
 "use client";
 import React, { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { useToast } from "@/hooks/use-toast";
-import { Button } from "@/components/ui/button";
-import { Plus, Trash2, Save, X, Pencil, Loader2 } from "lucide-react";
-import { Input } from "@/components/ui/input";
+import { Plus, Trash2 } from "lucide-react";
 import { siblingFields } from "@/constants/formFields";
 import { SiblingDetail } from "@/types/form";
-import { Card } from "@/components/ui/card";
 import { z } from "zod";
+import { FormLayout, FormSkeleton, FormActions } from "./FormComponents";
 
 const emptySibling: SiblingDetail = {
   name: "",
@@ -31,8 +30,78 @@ const siblingSchema = z.object({
   organizationAddress: z.string().min(1, "Organization address is required").max(200, "Address is too long"),
 });
 
-type ValidationErrors = {
-  [K in keyof SiblingDetail]?: string;
+const SiblingCard = ({ 
+  sibling, 
+  isEditing, 
+  onRemove, 
+  onChange, 
+  index,
+  errors 
+}: {
+  sibling: SiblingDetail;
+  isEditing: boolean;
+  onRemove: () => void;
+  onChange: (field: keyof SiblingDetail, value: string) => void;
+  index: number;
+  errors?: Record<string, string>;
+}) => {
+  const fields = siblingFields.map(field => ({
+    ...field,
+    validation: siblingSchema.shape[field.key as keyof SiblingDetail]
+  }));
+
+  return (
+    <div className="bg-white p-[20px] rounded-[12px] shadow-sm border border-gray-100">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-[32px]">
+        {fields.map((field) => (
+          <div key={field.key} className="mb-[24px]">
+            <label className="text-[14px] font-medium text-gray-600">
+              {field.label}
+            </label>
+            <AnimatePresence mode="wait" initial={false}>
+              <motion.div
+                key={isEditing ? "input" : "value"}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
+              >
+                {isEditing ? (
+                  <div className="mt-[8px]">
+                    <input
+                      type={field.type || "text"}
+                      value={sibling[field.key as keyof SiblingDetail]}
+                      onChange={(e) => onChange(field.key as keyof SiblingDetail, e.target.value)}
+                      placeholder={field.placeholder}
+                      className="w-full bg-transparent text-[16px] border-b border-gray-200 pb-[6px] transition-all duration-300 ease-in-out focus:outline-none focus:border-[#3eb2ce]"
+                    />
+                    {errors?.[field.key] && (
+                      <p className="text-[12px] text-red-500 mt-[4px]">{errors[field.key]}</p>
+                    )}
+                  </div>
+                ) : (
+                  <div className="text-[16px] text-gray-800 mt-[8px]">
+                    {sibling[field.key as keyof SiblingDetail] || "Not provided"}
+                  </div>
+                )}
+              </motion.div>
+            </AnimatePresence>
+          </div>
+        ))}
+      </div>
+      {isEditing && (
+        <motion.button
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          onClick={onRemove}
+          className="inline-flex items-center justify-center p-[10px] rounded-full text-red-500 hover:bg-red-50 transition-all duration-300"
+        >
+          <Trash2 size={20} />
+        </motion.button>
+      )}
+    </div>
+  );
 };
 
 const SiblingDetails: React.FC = () => {
@@ -41,7 +110,7 @@ const SiblingDetails: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [siblings, setSiblings] = useState<SiblingDetail[]>([]);
-  const [errors, setErrors] = useState<ValidationErrors[]>([]);
+  const [errors, setErrors] = useState<Record<string, string>[]>([]);
   const [originalSiblings, setOriginalSiblings] = useState<SiblingDetail[]>([]);
 
   useEffect(() => {
@@ -110,29 +179,29 @@ const SiblingDetails: React.FC = () => {
   const handleInputChange = (index: number, field: keyof SiblingDetail, value: string) => {
     setSiblings((prev) => {
       const updated = [...prev];
-      updated[index] = {
-        ...updated[index],
-        [field]: value,
-      };
+      updated[index] = { ...updated[index], [field]: value };
       return updated;
     });
 
-    const fieldSchema = siblingSchema.shape[field];
+    // Validate field
     try {
-      fieldSchema.parse(value);
-      setErrors((prev) => {
+      siblingSchema.shape[field].parse(value);
+      setErrors(prev => {
         const newErrors = [...prev];
         if (newErrors[index]) {
-          delete newErrors[index]?.[field];
+          delete newErrors[index][field];
         }
         return newErrors;
       });
     } catch (error) {
       if (error instanceof z.ZodError) {
-        setErrors((prev) => {
+        setErrors(prev => {
           const newErrors = [...prev];
           if (!newErrors[index]) newErrors[index] = {};
-          newErrors[index]![field] = error.errors[0].message;
+          newErrors[index] = {
+            ...newErrors[index],
+            [field]: error.errors[0].message
+          };
           return newErrors;
         });
       }
@@ -146,7 +215,7 @@ const SiblingDetails: React.FC = () => {
         return null;
       } catch (error) {
         if (error instanceof z.ZodError) {
-          const fieldErrors: ValidationErrors = {};
+          const fieldErrors: Record<string, string> = {};
           error.errors.forEach((err) => {
             const path = err.path[0] as keyof SiblingDetail;
             fieldErrors[path] = err.message;
@@ -159,7 +228,7 @@ const SiblingDetails: React.FC = () => {
 
     const hasErrors = validationResults.some((result) => result !== null);
     if (hasErrors) {
-      setErrors(validationResults as ValidationErrors[]);
+      setErrors(validationResults as Record<string, string>[]);
       return;
     }
 
@@ -191,139 +260,58 @@ const SiblingDetails: React.FC = () => {
   };
 
   if (isLoading) {
-    return (
-      <div className="flex gap-[8px] min-h-[160px]">
-        <div className="pr-[85px] pt-[20px] w-[200px] shrink-0">
-          Sibling Information
-        </div>
-        <div className="flex-grow">
-          <div className="animate-pulse space-y-[16px]">
-            <div className="h-[100px] bg-gray-200 rounded-[8px]" />
-          </div>
-        </div>
-      </div>
-    );
+    return <FormSkeleton fieldCount={5} />;
   }
 
   return (
-    <div className="flex gap-[8px] min-h-[160px]">
-      <div className="pr-[85px] pt-[20px] w-[200px] shrink-0">
-        Sibling Information
+    <div className="bg-white p-[20px] sm:p-[32px] rounded-[12px] shadow-lg">
+      <div className="flex items-center justify-between mb-[24px] sm:mb-[32px]">
+        <h2 className="text-[20px] sm:text-[24px] font-bold text-gray-800">
+          Sibling Information
+        </h2>
+        <FormActions
+          isEditing={isEditing}
+          isSaving={isSaving}
+          onSave={handleSave}
+          onCancel={handleCancelEdit}
+          onEdit={() => setIsEditing(true)}
+        />
       </div>
 
-      <div className="flex-grow space-y-[16px]">
+      <div className="space-y-[16px]">
         {siblings.length === 0 && !isEditing ? (
           <div className="text-gray-500 italic">
             No sibling information added yet
             <p className="text-[14px] text-gray-400">Click edit to add siblings</p>
           </div>
         ) : (
-          <div className="space-y-[16px]">
+          <>
             {siblings.map((sibling, index) => (
-              <Card key={index} className="p-[16px]">
-                <div className="grid grid-cols-2 gap-[8px]">
-                  {siblingFields.map((field) => (
-                    <div key={field.key} className="space-y-[4px]">
-                      <p className="text-[14px] font-medium text-gray-500">
-                        {field.label}
-                      </p>
-                      {isEditing ? (
-                        <div className="space-y-[4px]">
-                          <Input
-                            type={field.type || "text"}
-                            value={sibling[field.key as keyof SiblingDetail]}
-                            onChange={(e) =>
-                              handleInputChange(index, field.key as keyof SiblingDetail, e.target.value)
-                            }
-                            placeholder={field.placeholder}
-                            className={`h-[36px] ${
-                              errors[index]?.[field.key as keyof SiblingDetail] 
-                                ? "border-red-500 focus-visible:ring-red-500" 
-                                : ""
-                            }`}
-                          />
-                          {errors[index]?.[field.key as keyof SiblingDetail] && (
-                            <p className="text-[12px] text-red-500">
-                              {errors[index]?.[field.key as keyof SiblingDetail]}
-                            </p>
-                          )}
-                        </div>
-                      ) : (
-                        <p className="text-[14px] text-gray-900">
-                          {sibling[field.key as keyof SiblingDetail]}
-                        </p>
-                      )}
-                    </div>
-                  ))}
-                </div>
-                {isEditing && (
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    onClick={() => handleRemoveSibling(index)}
-                    className="mt-[8px] hover:bg-red-50"
-                    disabled={isSaving}
-                  >
-                    {isSaving ? (
-                      <Loader2 className="h-[16px] w-[16px] animate-spin" />
-                    ) : (
-                      <Trash2 className="h-[16px] w-[16px] text-red-500" />
-                    )}
-                  </Button>
-                )}
-              </Card>
+              <SiblingCard
+                key={index}
+                sibling={sibling}
+                isEditing={isEditing}
+                onRemove={() => handleRemoveSibling(index)}
+                onChange={(field, value) => handleInputChange(index, field, value)}
+                index={index}
+                errors={errors[index]}
+              />
             ))}
-          </div>
-        )}
-
-        <div className="flex justify-between items-center">
-          {isEditing && (
-            <Button
-              variant="outline"
-              onClick={handleAddSibling}
-              className="flex items-center gap-[8px]"
-            >
-              <Plus className="h-[16px] w-[16px]" />
-              Add Sibling
-            </Button>
-          )}
-
-          <div className="flex space-x-[8px]">
-            {isEditing ? (
-              <>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  onClick={handleCancelEdit}
-                  className="hover:bg-red-50"
-                >
-                  <X className="h-[20px] w-[20px] text-red-500" />
-                </Button>
-                <Button
-                  onClick={handleSave}
-                  className="flex items-center gap-[8px]"
-                  disabled={isSaving}
-                >
-                  {isSaving ? (
-                    <Loader2 className="h-[16px] w-[16px] animate-spin" />
-                  ) : (
-                    <Save className="h-[16px] w-[16px]" />
-                  )}
-                  {isSaving ? "Saving..." : "Save"}
-                </Button>
-              </>
-            ) : (
-              <Button
-                variant="outline"
-                size="icon"
-                onClick={() => setIsEditing(true)}
-                className="hover:bg-gray-100"
+            
+            {isEditing && (
+              <motion.button
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={handleAddSibling}
+                className="inline-flex items-center gap-[8px] p-[10px] rounded-[8px] bg-gray-100 text-gray-600 hover:bg-gray-200 transition-all duration-300"
               >
-                <Pencil size={18} />
-              </Button>
+                <Plus size={20} />
+                Add Sibling
+              </motion.button>
             )}
-          </div>
-        </div>
+          </>
+        )}
       </div>
     </div>
   );

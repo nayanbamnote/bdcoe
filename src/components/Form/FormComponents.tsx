@@ -90,7 +90,7 @@ const FormField = ({
   );
 };
 
-const FormActions = ({ isEditing, isSaving, onSave, onCancel, onEdit }: {
+export const FormActions = ({ isEditing, isSaving, onSave, onCancel, onEdit }: {
   isEditing: boolean;
   isSaving: boolean;
   onSave: () => void;
@@ -228,9 +228,9 @@ export const FormLayout = <T extends BaseFormData>({
   }
 
   return (
-    <div className="bg-white p-[32px] rounded-[12px] shadow-lg">
-      <div className="flex items-center justify-between mb-[32px]">
-        <h2 className="text-[24px] font-bold text-gray-800">
+    <div className="bg-white p-[20px] sm:p-[32px] rounded-[12px] shadow-lg">
+      <div className="flex items-center justify-between mb-[24px] sm:mb-[32px]">
+        <h2 className="text-[20px] sm:text-[24px] font-bold text-gray-800">
           {title}
         </h2>
         <FormActions
@@ -244,7 +244,7 @@ export const FormLayout = <T extends BaseFormData>({
           onEdit={onEdit}
         />
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-[32px]">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-[32px]">
         {fields.map((field) => (
           <FormField
             key={field.key}

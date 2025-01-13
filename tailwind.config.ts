@@ -11,6 +11,7 @@ const config: Config = {
   	extend: {
   		colors: {
 			black33: '#333333',
+			main: '#3eb2ce',
 			grayee: '#eeeeee',
 			gray66: '#666666',
   			background: 'hsl(var(--background))',

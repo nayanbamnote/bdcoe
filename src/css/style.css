@@ -966,7 +966,7 @@ div.team-inner-wrapper p {
 }
 .thumbnail-model {
 	margin: 0;
-	width: calc(100% - 22px);
+	/* width: calc(100% - 22px); */
 }
 .team-wrapper .thumbnail-model:before {
 	background: rgba(43, 47, 64, 0.76) none repeat scroll 0 0;

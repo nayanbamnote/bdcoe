@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import AdditionalStudentDetails from '@/components/Form/AdditionalStudentDetails'
 import Divider from '@/components/Form/Divider'
 import GuardianDetails from '@/components/Form/GuardianDetails'
@@ -25,6 +25,24 @@ const Page = () => {
     hasScholarship: false,
     isHosteler: false,
   });
+
+  useEffect(() => {
+    const initializeStudent = async () => {
+      try {
+        const response = await fetch('/api/student/init', {
+          method: 'POST',
+        });
+        
+        if (!response.ok) {
+          console.error('Failed to initialize student record');
+        }
+      } catch (error) {
+        console.error('Error initializing student:', error);
+      }
+    };
+
+    initializeStudent();
+  }, []);
 
   const handleToggleChange = (newToggles: AccommodationToggles) => {
     setToggleStates(newToggles);
