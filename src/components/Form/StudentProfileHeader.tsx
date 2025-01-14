@@ -145,20 +145,20 @@ const StudentProfileHeader = () => {
 
   if (!profileDetails.name && !isEditing) {
     return (
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center p-[12px] md:p-[16px] bg-white rounded-[8px]">
-        <div className="flex flex-col md:flex-row items-start md:items-center gap-[16px] w-full">
-          <div className="w-full md:flex-grow order-2 md:order-1">
-            <div className="space-y-[12px] md:space-y-[16px]">
-              <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-[12px] md:gap-0">
-                <div>
-                  <p className="text-[#6B7280] italic text-[14px] md:text-base">
+      <div className="bg-white rounded-[8px] border border-[#E5E7EB]">
+        <div className="p-[16px] md:p-[24px]">
+          <div className="flex flex-col md:flex-row items-center gap-[24px]">
+            <div className="w-full order-2 md:order-1">
+              <div className="flex flex-col md:flex-row justify-between items-center md:items-start w-full">
+                <div className="text-center md:text-left">
+                  <p className="text-[#6B7280] italic text-[14px] md:text-[16px]">
                     No profile information added yet
                   </p>
                   <p className="text-[12px] md:text-[14px] text-[#9CA3AF]">
                     Click edit to add your details
                   </p>
                 </div>
-                <div className="w-full md:w-auto">
+                <div className="mt-[16px] md:mt-0 ml-auto">
                   <ProfileActions
                     isEditing={isEditing}
                     isSaving={isSaving}
@@ -169,8 +169,72 @@ const StudentProfileHeader = () => {
                 </div>
               </div>
             </div>
+            <div className="order-1 md:order-2 w-full md:w-auto flex justify-center">
+              <ProfileImageUploader
+                file={file}
+                image={image}
+                isLoading={isLoading}
+                onImageUpload={handleImageUpload}
+                uploadProgress={uploadProgress}
+              />
+            </div>
           </div>
-          <div className="order-1 md:order-2 w-full md:w-auto flex justify-center md:justify-end">
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="bg-white rounded-[8px] border border-[#E5E7EB]">
+      <div className="p-[16px] md:p-[24px]">
+        <div className="flex flex-col md:flex-row items-center gap-[24px]">
+          <div className="w-full order-2 md:order-1">
+            <div className="w-full">
+              {isEditing ? (
+                <div className="space-y-[16px]">
+                  <div className="flex flex-col md:flex-row justify-between items-center md:items-start gap-[16px] md:gap-[24px]">
+                    <div className="w-full text-center md:text-left">
+                      <ProfileForm
+                        profileDetails={profileDetails}
+                        onInputChange={handleInputChange}
+                        validationErrors={validationErrors}
+                      />
+                    </div>
+                    <div className="flex-shrink-0 ml-auto">
+                      <ProfileActions
+                        isEditing={isEditing}
+                        isSaving={isSaving}
+                        onSave={saveChanges}
+                        onCancel={() => {
+                          setIsEditing(false);
+                          setValidationErrors({});
+                        }}
+                        onEdit={() => setIsEditing(true)}
+                      />
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="space-y-[16px]">
+                  <div className="flex flex-col md:flex-row justify-between items-center md:items-start gap-[16px] md:gap-[24px]">
+                    <div className="w-full text-center md:text-left">
+                      <ProfileDisplay profileDetails={profileDetails} />
+                    </div>
+                    <div className="flex-shrink-0 ml-auto">
+                      <ProfileActions
+                        isEditing={isEditing}
+                        isSaving={isSaving}
+                        onSave={saveChanges}
+                        onCancel={() => setIsEditing(false)}
+                        onEdit={() => setIsEditing(true)}
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+          <div className="order-1 md:order-2 w-full md:w-auto flex justify-center">
             <ProfileImageUploader
               file={file}
               image={image}
@@ -179,58 +243,6 @@ const StudentProfileHeader = () => {
               uploadProgress={uploadProgress}
             />
           </div>
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <div className="flex flex-col md:flex-row justify-between items-start md:items-center p-[12px] md:p-[16px] bg-white rounded-[8px]">
-      <div className="flex flex-col md:flex-row items-start md:items-center gap-[16px] w-full">
-        <div className="w-full md:flex-grow order-2 md:order-1">
-          {isEditing ? (
-            <div className="space-y-[12px] md:space-y-[16px]">
-              <ProfileForm
-                profileDetails={profileDetails}
-                onInputChange={handleInputChange}
-                validationErrors={validationErrors}
-              />
-              <div className="w-full md:w-auto">
-                <ProfileActions
-                  isEditing={isEditing}
-                  isSaving={isSaving}
-                  onSave={saveChanges}
-                  onCancel={() => {
-                    setIsEditing(false);
-                    setValidationErrors({});
-                  }}
-                  onEdit={() => setIsEditing(true)}
-                />
-              </div>
-            </div>
-          ) : (
-            <div className="space-y-[12px] md:space-y-[16px]">
-              <ProfileDisplay profileDetails={profileDetails} />
-              <div className="w-full md:w-auto">
-                <ProfileActions
-                  isEditing={isEditing}
-                  isSaving={isSaving}
-                  onSave={saveChanges}
-                  onCancel={() => setIsEditing(false)}
-                  onEdit={() => setIsEditing(true)}
-                />
-              </div>
-            </div>
-          )}
-        </div>
-        <div className="order-1 md:order-2 w-full md:w-auto flex justify-center md:justify-end">
-          <ProfileImageUploader
-            file={file}
-            image={image}
-            isLoading={isLoading}
-            onImageUpload={handleImageUpload}
-            uploadProgress={uploadProgress}
-          />
         </div>
       </div>
     </div>

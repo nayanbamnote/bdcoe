@@ -1,5 +1,6 @@
-import { Input } from "@/components/ui/input"
-import { ProfileDetails } from '@/types/profile'
+import React from 'react';
+import { ProfileDetails } from '@/types/profile';
+import { motion, AnimatePresence } from "framer-motion";
 
 interface ProfileFormProps {
   profileDetails: ProfileDetails;
@@ -7,72 +8,104 @@ interface ProfileFormProps {
   validationErrors: { [K in keyof ProfileDetails]?: string };
 }
 
+const Input = React.forwardRef<HTMLInputElement, React.InputHTMLAttributes<HTMLInputElement>>(
+  ({ className, ...props }, ref) => {
+    return (
+      <input
+        className={`w-full bg-transparent text-[16px] transition-all duration-300 ease-in-out focus:outline-none placeholder:text-gray-400 ${className}`}
+        ref={ref}
+        {...props}
+      />
+    )
+  }
+);
+
+Input.displayName = 'Input';
+
+const FormField = ({ 
+  type,
+  value,
+  onChange,
+  placeholder,
+  error
+}: {
+  type: string;
+  value: string;
+  onChange: (value: string) => void;
+  placeholder: string;
+  error?: string;
+}) => {
+  return (
+    <div className="relative">
+      <motion.div
+        initial={{ y: -10, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.2 }}
+      >
+        <div className="relative">
+          <Input
+            type={type}
+            value={value}
+            onChange={(e) => onChange(e.target.value)}
+            placeholder={placeholder}
+            className="border-b-2 border-gray-200 py-[4px] focus:border-[#3eb2ce] placeholder:opacity-70"
+          />
+          <AnimatePresence mode="wait">
+            {error && (
+              <motion.p
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                className="text-[12px] text-red-500 mt-[4px] absolute"
+              >
+                {error}
+              </motion.p>
+            )}
+          </AnimatePresence>
+        </div>
+      </motion.div>
+    </div>
+  );
+};
+
 export const ProfileForm: React.FC<ProfileFormProps> = ({
   profileDetails,
   onInputChange,
   validationErrors
 }) => {
   return (
-    <div className="space-y-4">
-      <div>
-        <input
-          type="text"
-          value={profileDetails.name}
-          onChange={(e) => onInputChange("name", e.target.value)}
-          placeholder="Name"
-          className={`w-full p-2 border rounded-md ${
-            validationErrors.name ? 'border-red-500' : 'border-gray-300'
-          }`}
-        />
-        {validationErrors.name && (
-          <p className="text-red-500 text-sm mt-1">{validationErrors.name}</p>
-        )}
-      </div>
+    <div className="space-y-[24px]">
+      <FormField
+        type="text"
+        value={profileDetails.name}
+        onChange={(value) => onInputChange("name", value)}
+        placeholder="Full Name"
+        error={validationErrors.name}
+      />
 
-      <div>
-        <input
-          type="email"
-          value={profileDetails.email}
-          onChange={(e) => onInputChange("email", e.target.value)}
-          placeholder="Email"
-          className={`w-full p-2 border rounded-md ${
-            validationErrors.email ? 'border-red-500' : 'border-gray-300'
-          }`}
-        />
-        {validationErrors.email && (
-          <p className="text-red-500 text-sm mt-1">{validationErrors.email}</p>
-        )}
-      </div>
+      <FormField
+        type="email"
+        value={profileDetails.email}
+        onChange={(value) => onInputChange("email", value)}
+        placeholder="Email Address"
+        error={validationErrors.email}
+      />
 
-      <div>
-        <input
-          type="tel"
-          value={profileDetails.phone}
-          onChange={(e) => onInputChange("phone", e.target.value)}
-          placeholder="Phone"
-          className={`w-full p-2 border rounded-md ${
-            validationErrors.phone ? 'border-red-500' : 'border-gray-300'
-          }`}
-        />
-        {validationErrors.phone && (
-          <p className="text-red-500 text-sm mt-1">{validationErrors.phone}</p>
-        )}
-      </div>
+      <FormField
+        type="tel"
+        value={profileDetails.phone}
+        onChange={(value) => onInputChange("phone", value)}
+        placeholder="Phone Number"
+        error={validationErrors.phone}
+      />
 
-      <div>
-        <input
-          type="text"
-          value={profileDetails.location}
-          onChange={(e) => onInputChange("location", e.target.value)}
-          placeholder="Location"
-          className={`w-full p-2 border rounded-md ${
-            validationErrors.location ? 'border-red-500' : 'border-gray-300'
-          }`}
-        />
-        {validationErrors.location && (
-          <p className="text-red-500 text-sm mt-1">{validationErrors.location}</p>
-        )}
-      </div>
+      <FormField
+        type="text"
+        value={profileDetails.location}
+        onChange={(value) => onInputChange("location", value)}
+        placeholder="Location"
+        error={validationErrors.location}
+      />
     </div>
   );
 };
