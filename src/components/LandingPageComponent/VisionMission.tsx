@@ -39,7 +39,7 @@ const visionData: VisionItem[] = [
 
 const VisionCard: React.FC<VisionItem> = ({ Icon, iconSize, title, description }) => (
   <div className="flex flex-col items-center text-center p-4 border rounded-lg shadow-lg min-h-[234px] w-[280px]">
-    <div className="text-blue-500 mb-4">
+    <div className="text-[#3eb2ce] mb-4">
       <Icon size={iconSize} />
     </div>
     <h3 className="text-xl font-semibold mb-2">{title}</h3>

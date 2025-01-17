@@ -6,6 +6,12 @@ import { ClerkProvider } from '@clerk/nextjs'
 import { Toaster } from '@/components/ui/toaster'
 const recursive = Recursive({ subsets: ['latin'] })
 import { EdgeStoreProvider } from '../lib/edgestore';
+import "@/css/animate.css";
+import "@/css/bootstrap.min.css";
+import "@/css/font-awesome.min.css";
+import "@/css/meanmenu.css";
+import "@/css/one.css";
+import "@/css/style.css";
 
 export const metadata = constructMetadata();
 
@@ -18,7 +24,9 @@ export default function RootLayout({
     <html lang="en">
       <ClerkProvider>
         <body className={`${recursive.className} antialiased flex flex-col`}>
-        <EdgeStoreProvider>{children}</EdgeStoreProvider>
+          <EdgeStoreProvider>
+            {children}
+          </EdgeStoreProvider>
           <Toaster />
         </body>
       </ClerkProvider>

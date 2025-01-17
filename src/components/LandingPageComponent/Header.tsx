@@ -46,17 +46,28 @@ const AuthButton: React.FC = () => (
   <motion.li
     whileHover={{ scale: 1.05 }}
     whileTap={{ scale: 0.95 }}
+    initial={false}
   >
     <SignedIn>
       <SignOutButton redirectUrl="/">
-        <Button variant="destructive" size="sm">
+        <Button 
+          variant="destructive" 
+          size="sm"
+          type="button"
+          className="inline-flex items-center justify-center"
+        >
           <LogOut className="mr-[6px] h-[16px] w-[16px]" />
           Sign Out
         </Button>
       </SignOutButton>
     </SignedIn>
     <SignedOut>
-      <Button asChild variant="default" size="sm">
+      <Button 
+        asChild 
+        variant="default" 
+        size="sm"
+        type="button"
+      >
         <Link href="/sign-in">
           <LogIn className="mr-[6px] h-[16px] w-[16px]" />
           Login
@@ -67,10 +78,11 @@ const AuthButton: React.FC = () => (
 )
 
 const Header: React.FC = () => {
-  const { user } = useUser()
+  const { user, isSignedIn } = useUser()
   const [isUserAdmin, setIsUserAdmin] = useState(false)
-  const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const [navigationItems, setNavigationItems] = useState<NavItem[]>([
+  const [isLoading, setIsLoading] = useState(true)
+
+  const baseNavigationItems: NavItem[] = [
     {
       label: "Home",
       href: "/",
@@ -82,44 +94,47 @@ const Header: React.FC = () => {
       href: "/profile",
       icon: <User className="h-[16px] w-[16px]" />,
     },
-  ])
+  ]
+
+  const adminNavigationItem: NavItem = {
+    label: "Dashboard",
+    href: "/dashboard",
+    icon: <LayoutDashboard className="h-[16px] w-[16px]" />,
+  }
+
+  const [navigationItems, setNavigationItems] = useState<NavItem[]>(baseNavigationItems)
 
   useEffect(() => {
     const checkAdminStatus = async () => {
-      if (!user?.primaryEmailAddress?.emailAddress) return
-      
-      const adminStatus = await isAdmin(user.primaryEmailAddress.emailAddress)
-      setIsUserAdmin(adminStatus)
-      
-      if (!adminStatus) {
-        setNavigationItems(prev => prev.filter(item => item.label !== "Dashboard"))
-        return
-      }
-      
-      setNavigationItems(prev => {
-        if (prev.some(item => item.label === "Dashboard")) {
-          return prev
+      setIsLoading(true)
+      try {
+        if (!isSignedIn || !user?.primaryEmailAddress?.emailAddress) {
+          setIsUserAdmin(false)
+          setNavigationItems(baseNavigationItems)
+        } else {
+          const adminStatus = await isAdmin(user.primaryEmailAddress.emailAddress)
+          setIsUserAdmin(adminStatus)
+          setNavigationItems(adminStatus 
+            ? [...baseNavigationItems, adminNavigationItem]
+            : baseNavigationItems
+          )
         }
-        return [
-          ...prev,
-          {
-            label: "Dashboard",
-            href: "/dashboard",
-            icon: <LayoutDashboard className="h-[16px] w-[16px]" />,
-          },
-        ]
-      })
+      } catch (error) {
+        console.error('Error checking admin status:', error)
+        setIsUserAdmin(false)
+        setNavigationItems(baseNavigationItems)
+      } finally {
+        setIsLoading(false)
+      }
     }
 
     checkAdminStatus()
-  }, [user])
-
-  const toggleMenu = () => setIsMenuOpen(!isMenuOpen)
+  }, [isSignedIn, user?.primaryEmailAddress?.emailAddress])
 
   return (
     <motion.header 
       className="bg-white shadow-sm sticky top-[0px] z-[50]"
-      initial={{ opacity: 0, y: -50 }}
+      initial={false}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
       role="banner"
@@ -144,7 +159,7 @@ const Header: React.FC = () => {
           
           <nav className="hidden md:!flex items-center space-x-[12px]" role="navigation">
             <ul className="flex space-x-[12px] items-center mb-0">
-              {navigationItems.map((item, index) => (
+              {!isLoading && navigationItems.map((item, index) => (
                 <NavLink key={index} {...item} />
               ))}
               <AuthButton />
@@ -159,7 +174,7 @@ const Header: React.FC = () => {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="bg-white">
-              {navigationItems.map((item, index) => (
+              {!isLoading && navigationItems.map((item, index) => (
                 <DropdownMenuItem key={index} asChild>
                   <Link href={item.href} className="flex items-center cursor-pointer">
                     {item.icon}
@@ -179,4 +194,3 @@ const Header: React.FC = () => {
 }
 
 export default Header
-

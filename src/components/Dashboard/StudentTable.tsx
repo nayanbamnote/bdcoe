@@ -328,9 +328,15 @@ const StudentTable = ({ students }: StudentTableProps) => {
                       )}
                     </button>
                   </td>
-                  <td className="p-[12px]">{student.profile?.name || "N/A"}</td>
-                  <td className="p-[12px]">{student.profile?.email || "N/A"}</td>
-                  <td className="p-[12px]">{student.profile?.phone || "N/A"}</td>
+                  <td className="p-[12px]">
+                    {student.profile?.name || student.clerkName || "N/A"}
+                  </td>
+                  <td className="p-[12px]">
+                    {student.profile?.email || student.clerkEmail || "N/A"}
+                  </td>
+                  <td className="p-[12px]">
+                    {student.profile?.phone || student.clerkPhone || "N/A"}
+                  </td>
                   <td className="p-[12px]">
                     {student.profile ? (
                       <span className="rounded-full bg-green-100 px-[12px] py-[4px] text-green-800">

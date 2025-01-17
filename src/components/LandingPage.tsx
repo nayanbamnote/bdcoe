@@ -1,12 +1,6 @@
 /* Om connection with backend */
 "use client";
 import React from "react";
-import "@/css/animate.css";
-import "@/css/bootstrap.min.css";
-import "@/css/font-awesome.min.css";
-import "@/css/meanmenu.css";
-import "@/css/one.css";
-import "@/css/style.css";
 import Footer from "./LandingPageComponent/Footer";
 import Banner from "./LandingPageComponent/Banner";
 import Callouts from "./LandingPageComponent/Callouts";

@@ -49,7 +49,7 @@ const AccommodationToggle: React.FC<AccommodationToggleProps> = ({ onToggleChang
 
       const newToggles = {
         hasScholarship: scholarshipData.data?.hasScholarship || false,
-        isHosteler: hostelData.data?.isHosteler || false,
+        isHosteler: hostelData.data?.isHosteler || false, 
       };
 
       setToggles(newToggles);

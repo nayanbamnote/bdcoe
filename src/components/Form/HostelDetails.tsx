@@ -69,7 +69,7 @@ const HostelDetails: React.FC = () => {
           const mergedData = HOSTEL_YEARS.map((year) => {
             const existingRecord = data.find((d: HostelDetail) => d.year === year);
             return existingRecord || {
-              year,
+              year, 
               academicYear: "",
               roomDetails: "",
               partnerDetails: "",
