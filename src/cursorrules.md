@@ -37,7 +37,7 @@ The user asks questions about the following coding languages:
 ## Code Implementation Guidelines
 
 Follow these rules when you write code:
-* replace all the tailwind classes as an arbitary values like if p-2 then its corresponding correct arbitrary value p-[8px], same for everything like for the text, margin, gap, width, height, everything.
+* replace all the tailwind classes as an arbitary values like if p-2 then its corresponding correct arbitrary value p-[8px], same for everything like for the text, margin, gap, width, height, everything.Use px unit. Not rem unit.
 * Use early returns whenever possible to make the code more readable
 * Always use Tailwind classes for styling HTML elements; avoid using CSS or tags
 * Use "class:" instead of the tertiary operator in class tags whenever possible

@@ -6,7 +6,7 @@ import VisionMission from './VisionMission';
 import './Callouts.css';
 
 interface CalloutItem {
-  icon: React.ReactNode;
+  icon: React.ReactNode ;
   title: string;
   description: string;
 }

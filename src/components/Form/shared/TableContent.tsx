@@ -1,13 +1,5 @@
 import React from "react";
-import { Input } from "@/components/ui/input";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface Column {
   header: string;
@@ -30,43 +22,65 @@ const TableContent: React.FC<TableContentProps> = ({
   onInputChange,
 }) => {
   return (
-    <Table>
-      <TableHeader>
-        <TableRow>
-          {columns.map((column) => (
-            <TableHead key={column.key}>{column.header}</TableHead>
-          ))}
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {data.map((row, index) => (
-          <TableRow key={row.label || row.year}>
+    <div className="overflow-x-auto">
+      <table className="w-full">
+        <thead>
+          <tr className="border-b border-gray-200">
             {columns.map((column) => (
-              <TableCell
+              <th
                 key={column.key}
-                className={column.key === "label" || column.key === "year" ? "font-medium" : ""}
+                className="text-left py-[12px] px-[16px] text-[14px] font-medium text-gray-600"
               >
-                {isEditing && column.key !== "label" && column.key !== "percentage" ? (
-                  <Input
-                    type={column.type || "text"}
-                    value={row[column.key] || ""}
-                    onChange={(e) =>
-                      onInputChange(index, column.key, e.target.value)
-                    }
-                    className="h-[36px]"
-                    placeholder={column.placeholder || ""}
-                  />
-                ) : column.key === "percentage" ? (
-                  row[column.key] ? `${row[column.key]}%` : "-"
-                ) : (
-                  row[column.key] || "-"
-                )}
-              </TableCell>
+                {column.header}
+              </th>
             ))}
-          </TableRow>
-        ))}
-      </TableBody>
-    </Table>
+          </tr>
+        </thead>
+        <tbody>
+          {data.map((row, index) => (
+            <tr
+              key={row.label || row.year}
+              className="border-b border-gray-200 last:border-none"
+            >
+              {columns.map((column) => (
+                <td
+                  key={column.key}
+                  className="py-[12px] px-[16px]"
+                >
+                  <AnimatePresence mode="wait">
+                    <motion.div
+                      key={isEditing ? "input" : "value"}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      {isEditing && column.key !== "label" && column.key !== "percentage" ? (
+                        <input
+                          type={column.type || "text"}
+                          value={row[column.key] || ""}
+                          onChange={(e) =>
+                            onInputChange(index, column.key, e.target.value)
+                          }
+                          placeholder={column.placeholder}
+                          className="w-full bg-transparent text-[16px] border-b border-gray-200 pb-[6px] focus:border-[#3eb2ce] focus:outline-none transition-all duration-300 ease-in-out"
+                        />
+                      ) : (
+                        <span className={`text-[16px] ${column.key === "label" ? "font-medium text-gray-800" : "text-gray-600"}`}>
+                          {column.key === "percentage" && row[column.key] 
+                            ? `${row[column.key]}%` 
+                            : row[column.key] || "-"}
+                        </span>
+                      )}
+                    </motion.div>
+                  </AnimatePresence>
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
   );
 };
 

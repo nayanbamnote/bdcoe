@@ -8,7 +8,7 @@ export interface FormFieldInterface {
 }
 
 export interface BaseFormData {
-  [key: string]: string;
+  [key: string]: string | undefined;
 }
 
 export interface FormProps<T extends BaseFormData> {
@@ -27,7 +27,7 @@ export interface FormProps<T extends BaseFormData> {
 export interface AdditionalDetails extends BaseFormData {
   aadharNo: string;
   dob: string;
-  bloodGroup: string;
+  bloodGroup?: string;
   addressOnAadhar: string;
   permanentAddress: string;
   casteCategory: string;

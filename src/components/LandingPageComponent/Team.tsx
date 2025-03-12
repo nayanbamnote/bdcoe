@@ -88,9 +88,9 @@ const TeamMemberCard: React.FC<TeamMember> = ({
   role,
   spaceClass 
 }) => (
-  <Card className="team-wrap">
+  <Card className="team-wrap rounded-none shadow-none border-none">
     <CardContent className="p-0">
-      <div className="thumbnail thumbnail-model">
+      <div className="thumbnail thumbnail-model w-full">
         <figure className="thumbnail-image">
           <img src={image} alt={name} />{" "}
         </figure>
@@ -135,25 +135,27 @@ const Team = () => {
             </p>
           </div>
           
-          <Carousel
-            opts={{
-              align: "start",
-              loop: true,
-            }}
-            className="w-full"
-          >
-            <CarouselContent className="-ml-4">
-              {teamData.map((member, index) => (
-                <CarouselItem key={index} className="pl-4 basis-full md:basis-1/2 lg:basis-1/4">
-                  <div className="p-1">
-                    <TeamMemberCard {...member} />
-                  </div>
-                </CarouselItem>
-              ))}
-            </CarouselContent>
-            <CarouselPrevious />
-            <CarouselNext />
-          </Carousel>
+          <div className="relative px-[32px] md:px-[48px]">
+            <Carousel
+              opts={{
+                align: "start",
+                loop: true,
+              }}
+              className="w-full"
+            >
+              <CarouselContent className="-ml-[16px] h-[450px]">
+                {teamData.map((member, index) => (
+                  <CarouselItem key={index} className="pl-[16px] basis-full md:basis-1/2 lg:basis-1/4">
+                    <div className="p-[16px]">
+                      <TeamMemberCard {...member} />
+                    </div>
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+              <CarouselPrevious className="h-[32px] w-[32px] md:h-[32px] md:w-[32px] left-[-24px] md:left-[-48px]" />
+              <CarouselNext className="h-[32px] w-[32px] md:h-[32px] md:w-[32px] right-[-24px] md:right-[-48px]" />
+            </Carousel>
+          </div>
         </div>
       </div>
     </div>

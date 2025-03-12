@@ -3,6 +3,7 @@
 import { useState, useMemo } from "react";
 import type { Student, StudentProfile, AcademicInfo, AdditionalStudentDetails, GuardianDetails } from "@prisma/client";
 import { ChevronDown, ChevronUp, Search } from "lucide-react";
+import React from "react";
 
 type CompleteStudent = Student & {
   profile: StudentProfile | null;
@@ -110,6 +111,7 @@ const StudentTable = ({ students }: StudentTableProps) => {
             {/* Academic Info */}
             <div>
               <h3 className="font-semibold mb-[8px]">Academic Information</h3>
+              <p>College ID: {student.academic?.college_id || "N/A"}</p>
               <p>Roll Number: {student.academic?.rollNumber || "N/A"}</p>
               <p>Semester: {student.academic?.currentSemester || "N/A"}</p>
               <p>Section: {student.academic?.section || "N/A"}</p>
@@ -120,9 +122,13 @@ const StudentTable = ({ students }: StudentTableProps) => {
             <div>
               <h3 className="font-semibold mb-[8px]">Additional Details</h3>
               <p>Aadhar: {student.additionalDetails?.aadharNo || "N/A"}</p>
+              <p>DOB: {student.additionalDetails?.dob ? new Date(student.additionalDetails.dob).toLocaleDateString() : "N/A"}</p>
               <p>Blood Group: {student.additionalDetails?.bloodGroup || "N/A"}</p>
+              <p>Address (Aadhar): {student.additionalDetails?.addressOnAadhar || "N/A"}</p>
+              <p>Permanent Address: {student.additionalDetails?.permanentAddress || "N/A"}</p>
               <p>Religion: {student.additionalDetails?.religion || "N/A"}</p>
               <p>Caste: {student.additionalDetails?.casteCategory || "N/A"}</p>
+              <p>Subcaste: {student.additionalDetails?.subcaste || "N/A"}</p>
             </div>
 
             {/* Guardian Details */}
@@ -130,9 +136,14 @@ const StudentTable = ({ students }: StudentTableProps) => {
               <h3 className="font-semibold mb-[8px]">Guardian Details</h3>
               {student.guardianDetails ? (
                 <>
-                  <p>Name: {student.guardianDetails.name || "N/A"}</p>
-                  <p>Relation: {student.guardianDetails.relation || "N/A"}</p>
-                  <p>Contact: {student.guardianDetails.phone || "N/A"}</p>
+                  <p>Father's Name: {student.guardianDetails.fatherName || "N/A"}</p>
+                  <p>Father's Contact: {student.guardianDetails.fatherContact || "N/A"}</p>
+                  <p>Father's Occupation: {student.guardianDetails.fatherOccupation || "N/A"}</p>
+                  <p>Father's Qualification: {student.guardianDetails.fatherQualification || "N/A"}</p>
+                  <p>Mother's Name: {student.guardianDetails.motherName || "N/A"}</p>
+                  <p>Mother's Contact: {student.guardianDetails.motherContact || "N/A"}</p>
+                  <p>Mother's Occupation: {student.guardianDetails.motherOccupation || "N/A"}</p>
+                  <p>Mother's Qualification: {student.guardianDetails.motherQualification || "N/A"}</p>
                 </>
               ) : (
                 <p>No guardian details available</p>
@@ -153,10 +164,10 @@ const StudentTable = ({ students }: StudentTableProps) => {
                 <div className="grid grid-cols-4 gap-[8px]">
                   {student.academicDetails?.map((detail, index) => (
                     <div key={index} className="bg-white p-[8px] rounded border">
-                      <p className="font-medium">Year: {detail.year}</p>
-                      <p>Academic Year: {detail.academicYear}</p>
-                      <p>SGPA: {detail.sgpa}</p>
-                      <p>CGPA: {detail.cgpa}</p>
+                      <p className="font-medium">Label: {detail.label}</p>
+                      <p>Year: {detail.year}</p>
+                      <p>Marks: {detail.totalMarks}/{detail.outOfMarks}</p>
+                      <p>Percentage: {detail.percentage}%</p>
                     </div>
                   ))}
                 </div>
@@ -208,6 +219,24 @@ const StudentTable = ({ students }: StudentTableProps) => {
                       <p>Room: {detail.roomDetails}</p>
                       <p>Partner: {detail.partnerDetails}</p>
                       <p>Transportation: {detail.transportation}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Siblings */}
+            {(student.siblings?.length ?? 0) > 0 && (
+              <div className="col-span-2">
+                <h3 className="font-semibold mb-[8px]">Siblings</h3>
+                <div className="grid grid-cols-3 gap-[8px]">
+                  {student.siblings?.map((sibling, index) => (
+                    <div key={index} className="bg-white p-[8px] rounded border">
+                      <p className="font-medium">Name: {sibling.name}</p>
+                      <p>Age: {sibling.age}</p>
+                      <p>Aadhar: {sibling.aadharNo}</p>
+                      <p>Occupation: {sibling.occupation}</p>
+                      <p>Organization: {sibling.organizationAddress}</p>
                     </div>
                   ))}
                 </div>
@@ -285,8 +314,8 @@ const StudentTable = ({ students }: StudentTableProps) => {
           </thead>
           <tbody>
             {filteredStudents.map((student) => (
-              <>
-                <tr key={student.id} className="border-t">
+              <React.Fragment key={student.id}>
+                <tr className="border-t">
                   <td className="p-[12px]">
                     <button
                       onClick={() => handleRowToggle(student.id)}
@@ -315,7 +344,7 @@ const StudentTable = ({ students }: StudentTableProps) => {
                   </td>
                 </tr>
                 {expandedRows.includes(student.id) && renderDetailRow(student)}
-              </>
+              </React.Fragment>
             ))}
           </tbody>
         </table>

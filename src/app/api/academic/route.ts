@@ -69,6 +69,7 @@ export async function PUT(req: Request) {
         studentId: student.id,
       },
       update: {
+        college_id: body.college_id,
         rollNumber: body.rollNumber,
         currentSemester: body.currentSemester,
         section: body.section,
@@ -76,6 +77,7 @@ export async function PUT(req: Request) {
       },
       create: {
         studentId: student.id,
+        college_id: body.college_id,
         rollNumber: body.rollNumber,
         currentSemester: body.currentSemester,
         section: body.section,

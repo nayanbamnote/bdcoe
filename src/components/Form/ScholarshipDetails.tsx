@@ -9,19 +9,6 @@ import { z } from "zod";
 const scholarshipDetailSchema = z.object({
   year: z.string(),
   academicYear: z.string()
-    .regex(/^\d{4}-\d{2}$/, "Academic Year must be in YYYY-YY format (e.g., 2024-25)")
-    .refine(
-      (year) => {
-        const [startYear, endYear] = year.split('-');
-        const start = parseInt(startYear);
-        const end = parseInt(endYear);
-        const currentYear = new Date().getFullYear();
-        return start >= 1900 && 
-               start <= currentYear + 4 && // Allow future years for upcoming scholarships
-               end === parseInt(startYear.slice(2)) + 1;
-      },
-      "Invalid academic year format. Example: 2024-25"
-    )
     .optional()
     .or(z.literal("")),
   type: z.string()
@@ -123,17 +110,8 @@ const ScholarshipDetails: React.FC = () => {
           if (value === "") {
             updatedDetail.academicYear = "";
           } else {
-            let formattedValue = value.replace(/\D/g, '');
-            if (formattedValue.length >= 4) {
-              const yearStart = formattedValue.slice(0, 4);
-              const yearEnd = parseInt(yearStart.slice(2)) + 1;
-              formattedValue = `${yearStart}-${yearEnd.toString().padStart(2, '0')}`;
-            }
-            
-            if (formattedValue.length === 7) {
-              scholarshipDetailSchema.shape.academicYear.parse(formattedValue);
-            }
-            updatedDetail.academicYear = formattedValue;
+            const cleanValue = value.replace(/[^\d-]/g, '');
+            updatedDetail.academicYear = cleanValue.slice(0, 7);
           }
         } else if (field === "amount") {
           // Remove non-numeric characters and leading zeros
@@ -170,18 +148,38 @@ const ScholarshipDetails: React.FC = () => {
   const handleSave = async () => {
     setIsSaving(true);
     try {
-      // Validate all scholarship details before saving
-      const validatedData = scholarshipDetailsArraySchema.parse(scholarshipDetails);
+      // Create a modified schema for non-empty rows that requires all fields
+      const nonEmptyRowSchema = scholarshipDetailSchema.extend({
+        academicYear: z.string().min(1, "Academic Year is required"),
+        type: z.string().min(1, "Scholarship type is required"),
+        criteria: z.string().min(1, "Eligibility criteria is required"),
+        amount: z.string().min(1, "Amount is required"),
+      });
 
-      // Filter out empty rows (rows with only the year field filled)
-      const nonEmptyData = validatedData.filter(detail => 
+      // Filter out completely empty rows (except year) and validate non-empty rows
+      const dataToSave = scholarshipDetails.map(detail => {
+        // Check if the row has any data besides the year
+        const hasData = detail.academicYear || detail.type || detail.criteria || detail.amount;
+        
+        if (hasData) {
+          // If row has any data, validate all required fields
+          try {
+            nonEmptyRowSchema.parse(detail);
+          } catch (error) {
+            if (error instanceof z.ZodError) {
+              throw new Error(`Row ${detail.year}: ${error.errors[0].message}`);
+            }
+          }
+        }
+        return detail;
+      }).filter(detail => 
         detail.academicYear || detail.type || detail.criteria || detail.amount
       );
 
       const response = await fetch("/api/scholarship-details", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(nonEmptyData),
+        body: JSON.stringify(dataToSave),
       });
 
       if (!response.ok) throw new Error("Failed to save changes");

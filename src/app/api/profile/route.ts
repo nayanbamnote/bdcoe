@@ -52,16 +52,19 @@ export async function PUT(req: Request) {
 
     const body = await req.json();
     
-    // Find or create student record
-    let student = await prisma.student.upsert({
+    // Find the student first
+    const student = await prisma.student.findUnique({
       where: { 
         clerkUserId: user.id 
-      },
-      update: {},
-      create: {
-        clerkUserId: user.id,
-      },
+      }
     });
+
+    if (!student) {
+      return NextResponse.json(
+        { error: "Student record not found" },
+        { status: 404 }
+      );
+    }
 
     // Update or create profile
     const profile = await prisma.studentProfile.upsert({

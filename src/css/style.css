@@ -1,6 +1,53 @@
+/*
+    Template Name    : College Education
+	Description		 : Responsive Education Multi-purpose Template
+    Version          : 1.0
+*/
 
+/*
+================================================
+/* Table of Content
+==================================================
+
+1. Fonts - Raleway and Opensans
+2. Common CSS
+3. Loader CSS
+4. Top Wrapper
+5. Logo Bar 
+6. Navigation
+7. Banner Wrapper
+8. Callouts
+9. About us home page
+10. Team Wrapper
+11. Satisfied-wrapper
+12. Testimonials Wrapper
+13. Pricing Wrapper
+14. Home Courses
+15. breadcrumb wrapper
+16. Inner page Wrapper
+17. Courses page
+18. About Us Page
+19. Coming Soon
+20. 404 page
+21. Login
+22. Sign Up
+23. Gallery Page
+24. Contact Us
+25. Footer styles
+26. Copyrights Wrapper
+27. Media Quires 
+
+/*
+================================================
+1. Fonts - Raleway and Opensans
+================================================
+*/
 @import url('https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700|Raleway:300,400,600,700|Material+Icons');
-
+/*
+================================================
+2. Common CSS
+================================================
+*/
 * {
 	margin: 0;
 	padding: 0;
@@ -13,7 +60,6 @@ body {
 	color: #727272;
 }
 h1, h2, h3, h4, h5, h6 {
-	font-family: 'Raleway', sans-serif;
 	margin-top: 0;
 }
 a {
@@ -920,7 +966,7 @@ div.team-inner-wrapper p {
 }
 .thumbnail-model {
 	margin: 0;
-	width: calc(100% - 22px);
+	/* width: calc(100% - 22px); */
 }
 .team-wrapper .thumbnail-model:before {
 	background: rgba(43, 47, 64, 0.76) none repeat scroll 0 0;

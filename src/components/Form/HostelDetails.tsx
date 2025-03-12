@@ -8,32 +8,22 @@ import { z } from "zod";
 // Add Zod schema
 const hostelDetailSchema = z.object({
   year: z.string(),
-  academicYear: z.string()
-    .regex(/^\d{4}-\d{2}$/, "Academic Year must be in YYYY-YY format (e.g., 2024-25)")
-    .refine(
-      (year) => {
-        const [startYear, endYear] = year.split('-');
-        const start = parseInt(startYear);
-        const end = parseInt(endYear);
-        const currentYear = new Date().getFullYear();
-        return start >= 1900 && 
-               start <= currentYear + 4 && // Allow future years for upcoming terms
-               end === parseInt(startYear.slice(2)) + 1;
-      },
-      "Invalid academic year format. Example: 2024-25"
-    ),
+  academicYear: z.string(),
   roomDetails: z.string()
-    .regex(/^[A-Za-z0-9\s,-]+$/, "Room details can only contain letters, numbers, spaces, commas and hyphens")
-    .min(1, "Room details are required")
-    .max(50, "Room details too long"),
+    .regex(/^[A-Za-z0-9\s,-]*$/, "Room details can only contain letters, numbers, spaces, commas and hyphens")
+    .optional()
+    .or(z.literal(""))
+    .transform(v => v || ""),
   partnerDetails: z.string()
-    .regex(/^[A-Za-z\s.]+$/, "Partner name can only contain letters, spaces and dots")
-    .min(1, "Partner name is required")
-    .max(100, "Partner name too long"),
+    .regex(/^[A-Za-z\s.]*$/, "Partner name can only contain letters, spaces and dots")
+    .optional()
+    .or(z.literal(""))
+    .transform(v => v || ""),
   transportation: z.string()
-    .regex(/^[A-Za-z0-9\s/-]+$/, "Transportation details can only contain letters, numbers, spaces, slashes and hyphens")
-    .min(1, "Transportation details are required")
-    .max(50, "Transportation details too long")
+    .regex(/^[A-Za-z0-9\s/-]*$/, "Transportation details can only contain letters, numbers, spaces, slashes and hyphens")
+    .optional()
+    .or(z.literal(""))
+    .transform(v => v || "")
 });
 
 const hostelDetailsArraySchema = z.array(hostelDetailSchema);
@@ -116,40 +106,36 @@ const HostelDetails: React.FC = () => {
           if (value === "") {
             updatedDetail.academicYear = "";
           } else {
-            let formattedValue = value.replace(/\D/g, '');
-            if (formattedValue.length >= 4) {
-              const yearStart = formattedValue.slice(0, 4);
-              const yearEnd = parseInt(yearStart.slice(2)) + 1;
-              formattedValue = `${yearStart}-${yearEnd.toString().padStart(2, '0')}`;
-            }
-            
-            if (formattedValue.length === 7) {
-              hostelDetailSchema.shape.academicYear.parse(formattedValue);
-            }
-            updatedDetail.academicYear = formattedValue;
+            const cleanValue = value.replace(/[^\d-]/g, '');
+            updatedDetail.academicYear = cleanValue.slice(0, 7);
           }
         } else {
-          // Validate other fields
-          hostelDetailSchema.shape[field as keyof HostelDetail].parse(value);
+          // Only validate non-empty values during editing
+          if (value !== "") {
+            hostelDetailSchema.shape[field as keyof HostelDetail].parse(value);
+          }
           updatedDetail[field as keyof HostelDetail] = value;
         }
 
         updated[index] = updatedDetail;
         return updated;
       } catch (error) {
-        if (error instanceof z.ZodError) {
-          toast({
-            title: "Invalid Input",
-            description: error.errors[0].message,
-            variant: "destructive",
-          });
-        } else if (error instanceof Error) {
-          toast({
-            title: "Invalid Input",
-            description: error.message,
-            variant: "destructive",
-          });
-        }
+        // Move toast outside of setState to avoid the warning
+        setTimeout(() => {
+          if (error instanceof z.ZodError) {
+            toast({
+              title: "Invalid Input",
+              description: error.errors[0].message,
+              variant: "destructive",
+            });
+          } else if (error instanceof Error) {
+            toast({
+              title: "Invalid Input",
+              description: error.message,
+              variant: "destructive",
+            });
+          }
+        }, 0);
         return prev;
       }
     });
@@ -158,18 +144,40 @@ const HostelDetails: React.FC = () => {
   const handleSave = async () => {
     setIsSaving(true);
     try {
-      // Validate all hostel details before saving
-      const validatedData = hostelDetailsArraySchema.parse(hostelDetails);
-
-      // Filter out empty rows (rows with only the year field filled)
-      const nonEmptyData = validatedData.filter(detail => 
-        detail.academicYear || detail.roomDetails || detail.partnerDetails || detail.transportation
+      // Filter out rows where all fields except 'year' are empty
+      const nonEmptyRows = hostelDetails.filter(detail => 
+        detail.academicYear !== "" || 
+        detail.roomDetails !== "" || 
+        detail.partnerDetails !== "" || 
+        detail.transportation !== ""
       );
+
+      // For rows that have any data, validate that all fields are filled
+      const rowsWithMissingFields = nonEmptyRows.filter(detail => {
+        const hasAnyData = detail.academicYear !== "" || 
+                          detail.roomDetails !== "" || 
+                          detail.partnerDetails !== "" || 
+                          detail.transportation !== "";
+        
+        const hasAllData = detail.academicYear !== "" && 
+                          detail.roomDetails !== "" && 
+                          detail.partnerDetails !== "" && 
+                          detail.transportation !== "";
+        
+        return hasAnyData && !hasAllData;
+      });
+
+      if (rowsWithMissingFields.length > 0) {
+        throw new Error("Please fill all fields for rows where you've started entering data");
+      }
+
+      // Final validation before saving
+      const validatedData = hostelDetailsArraySchema.parse(nonEmptyRows);
 
       const response = await fetch("/api/hostel-details", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(nonEmptyData),
+        body: JSON.stringify(validatedData),
       });
 
       if (!response.ok) throw new Error("Failed to save changes");

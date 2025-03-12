@@ -11,6 +11,7 @@ const config: Config = {
   	extend: {
   		colors: {
 			black33: '#333333',
+			main: '#3eb2ce',
 			grayee: '#eeeeee',
 			gray66: '#666666',
   			background: 'hsl(var(--background))',
@@ -60,15 +61,17 @@ const config: Config = {
   			sm: 'calc(var(--radius) - 4px)'
   		},
 		  width: {
-			  info: '940px', // Added maxWidth configuration
+			  info: '940px',
 		  },
 		  fontSize: {
-			sm: '12px', // Small font size
-			base: '14px', // Base font size
-			xl: '28px', // Extra large font size
+			sm: '12px',
+			base: '14px',
+			xl: '28px',
 		},
   	}
   },
   plugins: [require("tailwindcss-animate")],
 };
+
+// Wrap the config with withUt helper
 export default config;

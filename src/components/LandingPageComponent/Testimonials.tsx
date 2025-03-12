@@ -72,37 +72,41 @@ const TestimonialBlock: React.FC<TestimonialPerson> = ({ image, content, name, r
 const Testimonials = () => {
   return (
     <div className="testimonials-wrapper">
-    <div className="container">
-      <div className="row">
-        <div className="title">
-          <h2>
-            CDOS <span className="!text-[#3eb2ce]">Testimonials</span>
-          </h2>
-          <p>
-            Lorem Ipsum is simply dummy text of the printing and typesetting
-            industry
-          </p>
-        </div>
+      <div className="container px-12 sm:px-16">
+        <div className="row">
+          <div className="title">
+            <h2>
+              CDOS <span className="!text-[#3eb2ce]">Testimonials</span>
+            </h2>
+            <p>
+              Lorem Ipsum is simply dummy text of the printing and typesetting
+              industry
+            </p>
+          </div>
 
-        <Carousel
-          opts={{
-            align: "start",
-            loop: true,
-          }}
-          className="w-full"
-        >
-          <CarouselContent className="-ml-4">
-            {testimonialData.map((testimonial, index) => (
-              <CarouselItem key={index} className="pl-4 md:basis-1/2">
-                <TestimonialBlock {...testimonial} />
-              </CarouselItem>
-            ))}
-          </CarouselContent>
-          <CarouselPrevious />
-          <CarouselNext />
-        </Carousel>
+          <div className="relative">
+            <Carousel
+              opts={{
+                align: "start",
+                loop: true,
+              }}
+              className="w-full"
+            >
+              <CarouselContent className="-ml-4">
+                {testimonialData.map((testimonial, index) => (
+                  <CarouselItem key={index} className="pl-4 md:basis-1/2">
+                    <TestimonialBlock {...testimonial} />
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+              <div className="hidden sm:block">
+                <CarouselPrevious />
+                <CarouselNext />
+              </div>
+            </Carousel>
+          </div>
+        </div>
       </div>
-    </div>
     </div>
   )
 }

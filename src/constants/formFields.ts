@@ -3,12 +3,19 @@ import * as z from "zod";
 
 export const academicFields: FormFieldWithValidation[] = [
   { 
+    key: "college_id", 
+    label: "College ID", 
+    placeholder: "BD22BE245",
+    validation: z.string()
+  .regex(/^BD\d{2}BE\d{3}$/, "Invalid roll number format (e.g., BD22BE245)")
+},
+  { 
     key: "rollNumber", 
     label: "Roll Number", 
     placeholder: "Roll Number",
     validation: z.string()
-      .min(1, "Roll number is required")
-      .regex(/^\d{2}[A-Z]{3}\d{3}$/, "Invalid roll number format (e.g., 21ABC123)")
+    .min(1, "Roll number must be at least 1")
+    .max(100, "Roll number must be at most 100")
   },
   { 
     key: "currentSemester", 
@@ -72,10 +79,8 @@ export const additionalFields: FormFieldWithValidation[] = [
   { 
     key: "bloodGroup", 
     label: "Blood Group", 
-    placeholder: "Blood Group",
-    validation: z.string()
-      .min(1, "Blood group is required")
-      .regex(/^(A|B|AB|O)[+-]$/, "Invalid blood group format (e.g., A+, B-, AB+, O-)")
+    placeholder: "Enter blood group",
+    validation: z.string().optional()
   },
   { 
     key: "addressOnAadhar", 
