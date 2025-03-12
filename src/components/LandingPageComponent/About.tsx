@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import React from 'react'
 
 const About = () => {
@@ -30,9 +31,9 @@ const About = () => {
                 </div>
                 <div className="about-btn">
                   {" "}
-                  <a href="#" className="btn">
+                  <Link href="/profile" className="btn">
                     Register
-                  </a>{" "}
+                  </Link>{" "}
                 </div>
               </div>
             </div>

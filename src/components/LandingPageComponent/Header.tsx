@@ -1,62 +1,82 @@
-"use client"
+"use client";
 
-import React, { useEffect, useState } from "react"
-import Link from "next/link"
-import Image from "next/image"
-import { SignedIn, SignedOut, useUser } from "@clerk/nextjs"
-import { SignOutButton } from "@clerk/nextjs"
-import { motion, AnimatePresence } from "framer-motion"
-import { Home, User, LayoutDashboard, LogOut, LogIn, Menu, X, ChevronDown } from 'lucide-react'
-import { isAdmin } from "@/utils/adminUtils"
-import { Button } from "@/components/ui/button"
+import React, { useEffect, useState } from "react";
+import Link from "next/link";
+import Image from "next/image";
+import { SignedIn, SignedOut, useUser } from "@clerk/nextjs";
+import { SignOutButton } from "@clerk/nextjs";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  Home,
+  User,
+  LayoutDashboard,
+  LogOut,
+  LogIn,
+  Menu,
+  X,
+  ChevronDown,
+} from "lucide-react";
+import { isAdmin } from "@/utils/adminUtils";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from "@/components/ui/dropdown-menu";
+import { useRouter } from "next/navigation";
 
 interface NavItem {
-  label: string
-  href: string
-  icon: React.ReactNode
-  isActive?: boolean
+  label: string;
+  href: string;
+  icon: React.ReactNode;
+  isActive?: boolean;
 }
 
+
+
 const NavLink: React.FC<NavItem> = ({ label, href, icon, isActive }) => (
-  <motion.li
-    whileHover={{ scale: 1.05 }}
-    whileTap={{ scale: 0.95 }}
-  >
-    <Link 
+  <motion.li whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+    <Link
       href={href}
       className={`flex items-center space-x-[6px] px-[10px] py-[6px] rounded-md transition-colors duration-200 ${
-        isActive ? "bg-blue-100 text-blue-600" : "text-gray-700 hover:bg-gray-100"
+        isActive
+          ? "bg-blue-100 text-blue-600"
+          : "text-gray-700 hover:bg-gray-100"
       }`}
       tabIndex={0}
-      aria-current={isActive ? "page" : undefined}
-    >
+      aria-current={isActive ? "page" : undefined}>
       {icon}
       <span>{label}</span>
     </Link>
   </motion.li>
-)
+);
 
-const AuthButton: React.FC = () => (
+const AuthButton: React.FC = () => {
+  const router = useRouter();
+  const handleNavigation = () => {
+    router.replace('/');
+  };
+  return (
   <motion.li
     whileHover={{ scale: 1.05 }}
     whileTap={{ scale: 0.95 }}
-  >
+    initial={false}>
     <SignedIn>
       <SignOutButton redirectUrl="/">
-        <Button variant="destructive" size="sm">
+        <Button
+          onClick={handleNavigation}
+          variant="destructive"
+          size="sm"
+          type="button"
+          className="inline-flex items-center justify-center">
           <LogOut className="mr-[6px] h-[16px] w-[16px]" />
           Sign Out
         </Button>
       </SignOutButton>
     </SignedIn>
     <SignedOut>
-      <Button asChild variant="default" size="sm">
+      <Button asChild variant="default" size="sm" type="button">
         <Link href="/sign-in">
           <LogIn className="mr-[6px] h-[16px] w-[16px]" />
           Login
@@ -64,13 +84,14 @@ const AuthButton: React.FC = () => (
       </Button>
     </SignedOut>
   </motion.li>
-)
+)};
 
 const Header: React.FC = () => {
-  const { user } = useUser()
-  const [isUserAdmin, setIsUserAdmin] = useState(false)
-  const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const [navigationItems, setNavigationItems] = useState<NavItem[]>([
+  const { user, isSignedIn } = useUser();
+  const [isUserAdmin, setIsUserAdmin] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const baseNavigationItems: NavItem[] = [
     {
       label: "Home",
       href: "/",
@@ -82,56 +103,61 @@ const Header: React.FC = () => {
       href: "/profile",
       icon: <User className="h-[16px] w-[16px]" />,
     },
-  ])
+  ];
+
+  const adminNavigationItem: NavItem = {
+    label: "Dashboard",
+    href: "/dashboard",
+    icon: <LayoutDashboard className="h-[16px] w-[16px]" />,
+  };
+
+  const [navigationItems, setNavigationItems] =
+    useState<NavItem[]>(baseNavigationItems);
 
   useEffect(() => {
     const checkAdminStatus = async () => {
-      if (!user?.primaryEmailAddress?.emailAddress) return
-      
-      const adminStatus = await isAdmin(user.primaryEmailAddress.emailAddress)
-      setIsUserAdmin(adminStatus)
-      
-      if (!adminStatus) {
-        setNavigationItems(prev => prev.filter(item => item.label !== "Dashboard"))
-        return
-      }
-      
-      setNavigationItems(prev => {
-        if (prev.some(item => item.label === "Dashboard")) {
-          return prev
+      setIsLoading(true);
+      try {
+        if (!isSignedIn || !user?.primaryEmailAddress?.emailAddress) {
+          setIsUserAdmin(false);
+          setNavigationItems(baseNavigationItems);
+        } else {
+          const adminStatus = await isAdmin(
+            user.primaryEmailAddress.emailAddress
+          );
+          setIsUserAdmin(adminStatus);
+          setNavigationItems(
+            adminStatus
+              ? [...baseNavigationItems, adminNavigationItem]
+              : baseNavigationItems
+          );
         }
-        return [
-          ...prev,
-          {
-            label: "Dashboard",
-            href: "/dashboard",
-            icon: <LayoutDashboard className="h-[16px] w-[16px]" />,
-          },
-        ]
-      })
-    }
+      } catch (error) {
+        console.error("Error checking admin status:", error);
+        setIsUserAdmin(false);
+        setNavigationItems(baseNavigationItems);
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
-    checkAdminStatus()
-  }, [user])
-
-  const toggleMenu = () => setIsMenuOpen(!isMenuOpen)
+    checkAdminStatus();
+  }, [isSignedIn, user?.primaryEmailAddress?.emailAddress]);
 
   return (
-    <motion.header 
+    <motion.header
       className="bg-white shadow-sm sticky top-[0px] z-[50]"
-      initial={{ opacity: 0, y: -50 }}
+      initial={false}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      role="banner"
-    >
+      role="banner">
       <div className="container mx-auto px-[16px] sm:px-[20px] lg:px-[24px]">
         <div className="flex justify-between items-center py-[12px]">
-          <Link 
-            href="/" 
+          <Link
+            href="/"
             className="flex-shrink-[0]"
             tabIndex={0}
-            aria-label="Go to homepage"
-          >
+            aria-label="Go to homepage">
             <Image
               src="/bd-logo2.png"
               alt="BDCOE"
@@ -141,16 +167,19 @@ const Header: React.FC = () => {
               priority
             />
           </Link>
-          
-          <nav className="hidden md:!flex items-center space-x-[12px]" role="navigation">
+
+          <nav
+            className="hidden md:!flex items-center space-x-[12px]"
+            role="navigation">
             <ul className="flex space-x-[12px] items-center mb-0">
-              {navigationItems.map((item, index) => (
-                <NavLink key={index} {...item} />
-              ))}
+              {!isLoading &&
+                navigationItems.map((item, index) => (
+                  <NavLink key={index} {...item} />
+                ))}
               <AuthButton />
             </ul>
           </nav>
-          
+
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" size="icon" className="md:hidden">
@@ -159,14 +188,17 @@ const Header: React.FC = () => {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="bg-white">
-              {navigationItems.map((item, index) => (
-                <DropdownMenuItem key={index} asChild>
-                  <Link href={item.href} className="flex items-center cursor-pointer">
-                    {item.icon}
-                    <span className="ml-[6px]">{item.label}</span>
-                  </Link>
-                </DropdownMenuItem>
-              ))}
+              {!isLoading &&
+                navigationItems.map((item, index) => (
+                  <DropdownMenuItem key={index} asChild>
+                    <Link
+                      href={item.href}
+                      className="flex items-center cursor-pointer">
+                      {item.icon}
+                      <span className="ml-[6px]">{item.label}</span>
+                    </Link>
+                  </DropdownMenuItem>
+                ))}
               <DropdownMenuItem>
                 <AuthButton />
               </DropdownMenuItem>
@@ -175,8 +207,7 @@ const Header: React.FC = () => {
         </div>
       </div>
     </motion.header>
-  )
-}
+  );
+};
 
-export default Header
-
+export default Header;

@@ -64,7 +64,7 @@ const CalloutBox: React.FC<CalloutItem> = ({ icon, title, description }) => (
 
 const Callouts = () => {
   return (
-    <div className="callouts-wrapper">
+    <div className="callouts-wrapper max-sm:!py-[30px]">
       <div className="container">
         <div className="title">
           <h2>

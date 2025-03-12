@@ -39,21 +39,8 @@ const visionData: VisionItem[] = [
 // ... existing imports and interfaces ...
 
 const VisionCard: React.FC<VisionItem> = ({ Icon, iconSize, title, description }) => (
-  <motion.div
-    className="flex flex-col items-center text-center p-4 border rounded-lg shadow-lg min-h-[234px] w-[280px]"
-    initial={{ opacity: 0, y: 20 }}
-    animate={{ opacity: 1, y: 0 }}
-    transition={{ duration: 0.5 }}
-    whileHover={{ 
-      scale: 1.03,
-      boxShadow: "0 10px 30px rgba(0,0,0,0.1)",
-    }}
-  >
-    <motion.div 
-      className="text-blue-500 mb-4"
-      whileHover={{ scale: 1.1 }}
-      transition={{ type: "spring", stiffness: 400 }}
-    >
+  <div className="flex flex-col items-center text-center p-4 border rounded-lg shadow-lg min-h-[234px] w-[280px]">
+    <div className="text-[#3eb2ce] mb-4">
       <Icon size={iconSize} />
     </motion.div>
     <h3 className="text-xl font-semibold mb-2">{title}</h3>

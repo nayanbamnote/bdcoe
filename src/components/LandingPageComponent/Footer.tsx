@@ -1,5 +1,6 @@
 import React from "react";
 import MapComponent from "./MapComponent";
+import { Twitter, Facebook, Instagram, Linkedin } from "lucide-react";
 
 const Footer = () => {
   return (
@@ -52,28 +53,28 @@ const Footer = () => {
             <ul className="flex justify-center gap-[16px]">
               <li>
                 <a className="twitter text-blue-500" href="#">
-                  <i className="fa fa-twitter"></i>
+                  <Twitter size={20} />
                 </a>
               </li>
               <li>
                 <a className="text-blue-700" href="#">
-                  <i className="fa fa-facebook"></i>
+                  <Facebook size={20} /> 
                 </a>
               </li>
               <li>
                 <a className="text-red-500" href="#">
-                  <i className="fa fa-pinterest"></i>
+                  <Instagram size={20} />
                 </a>
               </li>
               <li>
                 <a className="text-blue-600" href="#">
-                  <i className="fa fa-linkedin"></i>
+                  <Linkedin size={20} />
                 </a>
               </li>
             </ul>
           </div>
           <p className="text-[16px]">
-            © Copyright 2024, BDCOE | All Rights Reserved.
+            © Copyright 2024, BDCOE | All Rights Reserved | Nayan & Om.
           </p>
         </div>
       </div>
