@@ -25,11 +25,22 @@ import {
   accommodationSchema
 } from "./profile-steps"
 
-export default function NewProfileForm() {
+interface NewProfileFormProps {
+  initialData?: FormData | null
+}
+
+export default function NewProfileForm({ initialData }: NewProfileFormProps) {
   const [step, setStep] = useState<FormStep>(1)
-  const [formData, setFormData] = useState<FormData>({})
+  const [formData, setFormData] = useState<FormData>(initialData || {})
   const [isSubmitting, setIsSubmitting] = useState(false)
   const { toast } = useToast()
+  
+  // Update formData when initialData changes
+  useEffect(() => {
+    if (initialData) {
+      setFormData(initialData)
+    }
+  }, [initialData])
   
   function nextStep() {
     if (step < 8) {
@@ -102,46 +113,56 @@ export default function NewProfileForm() {
     setIsSubmitting(true);
     
     try {
-      console.log("Sending API request to /api/profile-complete");
-      
       // Submit the complete form data to the API
       const response = await fetch("/api/profile-complete", {
-        method: "POST",
+        method: initialData ? "PUT" : "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(completeFormData),
+        body: JSON.stringify({
+          profile: completeFormData.profile,
+          academic: completeFormData.academic,
+          additional: completeFormData.additional,
+          guardian: completeFormData.guardian,
+          siblings: completeFormData.siblings || [],
+          interests: completeFormData.interests || [],
+          academicHistory: completeFormData.academicHistory || [],
+          accommodation: {
+            isHosteler: completeFormData.accommodation?.isHosteler || false,
+            hasScholarship: completeFormData.accommodation?.hasScholarship || false,
+            hostelDetails: completeFormData.accommodation?.hostelDetails || [],
+            scholarshipDetails: completeFormData.accommodation?.scholarshipDetails || []
+          }
+        }),
       });
       
-      console.log("API response status:", response.status);
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => null);
+        throw new Error(
+          errorData?.message || 
+          `Failed to submit profile: ${response.status} ${response.statusText}`
+        );
+      }
+
       const result = await response.json();
       console.log("API response data:", result);
       
-      if (!response.ok) {
-        console.error("API error response:", result);
-        throw new Error(result.message || "Failed to submit profile");
-      }
-      
-      // Show success toast
       toast({
-        title: "Profile created!",
-        description: "Your profile has been successfully created.",
+        title: initialData ? "Profile updated!" : "Profile created!",
+        description: initialData 
+          ? "Your profile has been successfully updated."
+          : "Your profile has been successfully created.",
       });
       
-      // You could redirect here or reset all forms
     } catch (error) {
-      console.error("Error submitting profile:", error);
-      
-      // More detailed error logging
-      if (error instanceof Error) {
-        console.error("Error message:", error.message);
-        console.error("Error stack:", error.stack);
-      }
+      console.error("Form submission error:", error);
       
       toast({
         variant: "destructive",
         title: "Error",
-        description: "There was a problem submitting your information.",
+        description: error instanceof Error 
+          ? error.message 
+          : "There was a problem submitting your information.",
       });
     } finally {
       setIsSubmitting(false);

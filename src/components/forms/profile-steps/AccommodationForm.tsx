@@ -52,22 +52,10 @@ export function AccommodationForm({
     defaultValues: defaultValues || {
       hasScholarship: false,
       isHosteler: false,
-      scholarshipDetails: SCHOLARSHIP_YEARS.map(year => ({
-        year,
-        academicYear: "",
-        type: "",
-        criteria: "",
-        amount: "",
-      })),
-      hostelDetails: HOSTEL_YEARS.map(year => ({
-        year,
-        academicYear: "",
-        roomDetails: "",
-        partnerDetails: "",
-        transportation: "",
-      })),
+      scholarshipDetails: [],
+      hostelDetails: [],
     },
-  })
+  });
 
   const hasScholarship = useWatch({
     control: form.control,
@@ -79,66 +67,57 @@ export function AccommodationForm({
     name: "isHosteler",
   });
 
-  const { fields: scholarshipFields } = useFieldArray({
+  const { fields: scholarshipFields, append: appendScholarship } = useFieldArray({
     control: form.control,
     name: "scholarshipDetails",
   });
 
-  const { fields: hostelFields } = useFieldArray({
+  const { fields: hostelFields, append: appendHostel } = useFieldArray({
     control: form.control,
     name: "hostelDetails",
   });
 
-  // Reset details when toggles are turned off
   useEffect(() => {
     if (!hasScholarship) {
-      form.setValue("scholarshipDetails", SCHOLARSHIP_YEARS.map(year => ({
-        year,
-        academicYear: "",
-        type: "",
-        criteria: "",
-        amount: "",
-      })));
+      form.setValue("scholarshipDetails", []);
+    } else if (scholarshipFields.length === 0) {
+      SCHOLARSHIP_YEARS.forEach(year => {
+        appendScholarship({
+          year,
+          academicYear: "",
+          type: "",
+          criteria: "",
+          amount: ""
+        });
+      });
     }
-  }, [hasScholarship, form]);
+  }, [hasScholarship, form, scholarshipFields.length, appendScholarship]);
 
   useEffect(() => {
     if (!isHosteler) {
-      form.setValue("hostelDetails", HOSTEL_YEARS.map(year => ({
-        year,
-        academicYear: "",
-        roomDetails: "",
-        partnerDetails: "",
-        transportation: "",
-      })));
+      form.setValue("hostelDetails", []);
+    } else if (hostelFields.length === 0) {
+      HOSTEL_YEARS.forEach(year => {
+        appendHostel({
+          year,
+          academicYear: "",
+          roomDetails: "",
+          partnerDetails: "",
+          transportation: ""
+        });
+      });
     }
-  }, [isHosteler, form]);
+  }, [isHosteler, form, hostelFields.length, appendHostel]);
 
   const handleFormSubmit = (data: z.infer<typeof accommodationSchema>) => {
     console.log("AccommodationForm - form submitted with data:", data);
     
-    // If hasScholarship is false, ensure scholarshipDetails is properly formatted 
-    // to avoid validation issues
     if (!data.hasScholarship) {
-      data.scholarshipDetails = SCHOLARSHIP_YEARS.map(year => ({
-        year,
-        academicYear: "",
-        type: "",
-        criteria: "",
-        amount: "",
-      }));
+      data.scholarshipDetails = [];
     }
     
-    // If isHosteler is false, ensure hostelDetails is properly formatted
-    // to avoid validation issues
     if (!data.isHosteler) {
-      data.hostelDetails = HOSTEL_YEARS.map(year => ({
-        year,
-        academicYear: "",
-        roomDetails: "",
-        partnerDetails: "",
-        transportation: "",
-      }));
+      data.hostelDetails = [];
     }
     
     onSubmit(data);
@@ -210,7 +189,7 @@ export function AccommodationForm({
                       name={`scholarshipDetails.${index}.academicYear`}
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Academic Year</FormLabel>
+                          <FormLabel>Academic Year (Optional)</FormLabel>
                           <FormControl>
                             <Input 
                               placeholder="YYYY-YY" 
@@ -231,7 +210,7 @@ export function AccommodationForm({
                       name={`scholarshipDetails.${index}.type`}
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Type of Scholarship</FormLabel>
+                          <FormLabel>Type of Scholarship (Optional)</FormLabel>
                           <FormControl>
                             <Input 
                               placeholder="E.g. Merit, Government, Private" 
@@ -248,7 +227,7 @@ export function AccommodationForm({
                       name={`scholarshipDetails.${index}.criteria`}
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Eligibility Criteria</FormLabel>
+                          <FormLabel>Eligibility Criteria (Optional)</FormLabel>
                           <FormControl>
                             <Input 
                               placeholder="E.g. Based on marks, financial status" 
@@ -265,14 +244,13 @@ export function AccommodationForm({
                       name={`scholarshipDetails.${index}.amount`}
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Amount (₹)</FormLabel>
+                          <FormLabel>Amount (₹) (Optional)</FormLabel>
                           <FormControl>
                             <Input 
                               placeholder="Amount in ₹"
                               type="number"
                               {...field}
                               onChange={(e) => {
-                                // Remove non-numeric characters and leading zeros
                                 const numericValue = e.target.value.replace(/\D/g, '').replace(/^0+/, '') || '';
                                 field.onChange(numericValue);
                               }}
@@ -303,7 +281,7 @@ export function AccommodationForm({
                       name={`hostelDetails.${index}.academicYear`}
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Academic Year</FormLabel>
+                          <FormLabel>Academic Year (Optional)</FormLabel>
                           <FormControl>
                             <Input 
                               placeholder="YYYY-YY" 
@@ -324,7 +302,7 @@ export function AccommodationForm({
                       name={`hostelDetails.${index}.roomDetails`}
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Room Details</FormLabel>
+                          <FormLabel>Room Details (Optional)</FormLabel>
                           <FormControl>
                             <Input 
                               placeholder="Room No., Block" 
@@ -341,7 +319,7 @@ export function AccommodationForm({
                       name={`hostelDetails.${index}.partnerDetails`}
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Room Partner</FormLabel>
+                          <FormLabel>Room Partner (Optional)</FormLabel>
                           <FormControl>
                             <Input 
                               placeholder="Room Partner Name" 
@@ -358,7 +336,7 @@ export function AccommodationForm({
                       name={`hostelDetails.${index}.transportation`}
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Transportation</FormLabel>
+                          <FormLabel>Transportation (Optional)</FormLabel>
                           <FormControl>
                             <Input 
                               placeholder="Bus/Other"

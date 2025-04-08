@@ -99,87 +99,20 @@ export const accommodationSchema = z.object({
     z.object({
       year: z.string(),
       academicYear: z.string().optional(),
-      type: z.string().transform(val => val || "").pipe(
-        z.string().min(1, { message: "Scholarship type is required" }).optional()
-      ),
-      criteria: z.string().transform(val => val || "").pipe(
-        z.string().min(1, { message: "Eligibility criteria is required" }).optional()
-      ),
-      amount: z.string().transform(val => val || "").pipe(
-        z.string().regex(/^\d*$/, "Amount must be a valid number")
-          .refine(
-            (val) => {
-              if (!val) return true;
-              const num = parseInt(val);
-              return num > 0 && num <= 1000000;
-            },
-            "Amount must be between 1 and 10,00,000"
-          ).optional()
-      ),
+      type: z.string().optional(),
+      criteria: z.string().optional(),
+      amount: z.string().optional()
     })
   ).optional(),
   hostelDetails: z.array(
     z.object({
       year: z.string(),
       academicYear: z.string().optional(),
-      roomDetails: z.string().transform(val => val || "").pipe(
-        z.string().regex(/^[A-Za-z0-9\s,-]*$/, "Room details can only contain letters, numbers, spaces, commas and hyphens").optional()
-      ),
-      partnerDetails: z.string().transform(val => val || "").pipe(
-        z.string().regex(/^[A-Za-z\s.]*$/, "Partner name can only contain letters, spaces and dots").optional()
-      ),
-      transportation: z.string().transform(val => val || "").pipe(
-        z.string().regex(/^[A-Za-z0-9\s/-]*$/, "Transportation details can only contain letters, numbers, spaces, slashes and hyphens").optional()
-      ),
+      roomDetails: z.string().optional(),
+      partnerDetails: z.string().optional(),
+      transportation: z.string().optional()
     })
-  ).optional(),
-}).superRefine((data, ctx) => {
-  // Validate scholarship details only if hasScholarship is true
-  if (data.hasScholarship && data.scholarshipDetails) {
-    data.scholarshipDetails.forEach((item, index) => {
-      if (!item.type) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: "Scholarship type is required",
-          path: [`scholarshipDetails`, index, 'type']
-        });
-      }
-      if (!item.criteria) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: "Eligibility criteria is required",
-          path: [`scholarshipDetails`, index, 'criteria']
-        });
-      }
-    });
-  }
-  
-  // Validate hostel details only if isHosteler is true
-  if (data.isHosteler && data.hostelDetails) {
-    data.hostelDetails.forEach((item, index) => {
-      if (!item.roomDetails) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: "Room details are required",
-          path: [`hostelDetails`, index, 'roomDetails']
-        });
-      }
-      if (!item.partnerDetails) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: "Room partner details are required",
-          path: [`hostelDetails`, index, 'partnerDetails']
-        });
-      }
-      if (!item.transportation) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: "Transportation details are required",
-          path: [`hostelDetails`, index, 'transportation']
-        });
-      }
-    });
-  }
+  ).optional()
 });
 
 export type FormStep = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8
