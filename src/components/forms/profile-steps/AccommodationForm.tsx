@@ -116,6 +116,31 @@ export function AccommodationForm({
 
   const handleFormSubmit = (data: z.infer<typeof accommodationSchema>) => {
     console.log("AccommodationForm - form submitted with data:", data);
+    
+    // If hasScholarship is false, ensure scholarshipDetails is properly formatted 
+    // to avoid validation issues
+    if (!data.hasScholarship) {
+      data.scholarshipDetails = SCHOLARSHIP_YEARS.map(year => ({
+        year,
+        academicYear: "",
+        type: "",
+        criteria: "",
+        amount: "",
+      }));
+    }
+    
+    // If isHosteler is false, ensure hostelDetails is properly formatted
+    // to avoid validation issues
+    if (!data.isHosteler) {
+      data.hostelDetails = HOSTEL_YEARS.map(year => ({
+        year,
+        academicYear: "",
+        roomDetails: "",
+        partnerDetails: "",
+        transportation: "",
+      }));
+    }
+    
     onSubmit(data);
   };
 

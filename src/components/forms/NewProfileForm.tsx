@@ -88,15 +88,12 @@ export default function NewProfileForm() {
   async function onAccommodationSubmit(data: typeof accommodationSchema._type) {
     console.log("Accommodation data submitted:", data);
     
-    // First update the form data state
-    setFormData(prevData => {
-      const updatedData = {...prevData, accommodation: data};
-      
-      // Then submit the form once state is updated
-      submitCompleteForm(updatedData);
-      
-      return updatedData;
-    });
+    // Update formData first
+    const updatedFormData = {...formData, accommodation: data};
+    setFormData(updatedFormData);
+    
+    // Then submit the complete form
+    await submitCompleteForm(updatedFormData);
   }
   
   async function submitCompleteForm(completeFormData: FormData) {
@@ -121,6 +118,7 @@ export default function NewProfileForm() {
       console.log("API response data:", result);
       
       if (!response.ok) {
+        console.error("API error response:", result);
         throw new Error(result.message || "Failed to submit profile");
       }
       
@@ -133,6 +131,13 @@ export default function NewProfileForm() {
       // You could redirect here or reset all forms
     } catch (error) {
       console.error("Error submitting profile:", error);
+      
+      // More detailed error logging
+      if (error instanceof Error) {
+        console.error("Error message:", error.message);
+        console.error("Error stack:", error.stack);
+      }
+      
       toast({
         variant: "destructive",
         title: "Error",
