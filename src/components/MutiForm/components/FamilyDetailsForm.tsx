@@ -21,7 +21,7 @@ import { useFormik } from 'formik';
 import * as Yup from 'yup';
 
 const FamilyDetailsForm: React.FC = () => {
-  const { formData, updateFormData, nextStep } = useFormContext();
+  const { formData, updateFormData, nextStep, markStepAsCompleted } = useFormContext();
   const toast = useToast();
 
   const validationSchema = Yup.object({
@@ -67,12 +67,17 @@ const FamilyDetailsForm: React.FC = () => {
     validationSchema,
     onSubmit: (values) => {
       updateFormData(values);
+      
+      // Mark this step as completed
+      markStepAsCompleted(3);
+      
       toast({
         title: "Family details saved",
         status: "success",
         duration: 2000,
         isClosable: true,
       });
+      
       nextStep();
     },
   });
@@ -89,8 +94,10 @@ const FamilyDetailsForm: React.FC = () => {
       boxShadow="md"
     >
       <VStack spacing={6} align="stretch">
-        <Heading size="md">Family Details</Heading>
-        <Text color="gray.600">Please provide information about your family</Text>
+        <Box textAlign="center">
+          <Heading size="md" mb={2}>Family Details</Heading>
+          <Text color="gray.600">Please provide information about your family</Text>
+        </Box>
 
         <form onSubmit={formik.handleSubmit}>
           <VStack spacing={6} align="stretch">

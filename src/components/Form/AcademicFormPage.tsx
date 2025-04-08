@@ -55,4 +55,4 @@ const AcademicFormPage: React.FC = () => {
   );
 };
 
-export default AcademicFormPage; 
+export default AcademicFormPage;

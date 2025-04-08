@@ -24,7 +24,7 @@ import {
 } from '@chakra-ui/react';
 
 const PersonalDetailsForm: React.FC = () => {
-  const { formData, updateFormData, nextStep } = useFormContext();
+  const { formData, updateFormData, nextStep, markStepAsCompleted } = useFormContext();
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [addressSameAsAadhar, setAddressSameAsAadhar] = useState(false);
@@ -51,9 +51,11 @@ const PersonalDetailsForm: React.FC = () => {
     address: Yup.string().required('Current address is required'),
   });
 
-  const handleSubmit = useCallback((values: any) => {
-    // Save form data
+  const handleSubmit = (values: any) => {
     updateFormData(values);
+    
+    // Mark this step as completed
+    markStepAsCompleted(0);
     
     toast({
       title: "Personal details saved",
@@ -62,9 +64,8 @@ const PersonalDetailsForm: React.FC = () => {
       isClosable: true,
     });
     
-    // Move to next step
     nextStep();
-  }, [updateFormData, nextStep, toast]);
+  };
 
   const formik = useFormik({
     initialValues: {
@@ -150,8 +151,10 @@ const PersonalDetailsForm: React.FC = () => {
       boxShadow="md"
     >
       <VStack spacing={6} align="stretch">
-        <Heading size="md">Personal Details</Heading>
-        <Text color="gray.600">Please provide your personal information</Text>
+        <Box textAlign="center">
+          <Heading size="md" mb={2}>Personal Details</Heading>
+          <Text color="gray.600">Please provide your personal information</Text>
+        </Box>
 
         <form onSubmit={formik.handleSubmit}>
           <VStack spacing={6} align="stretch">

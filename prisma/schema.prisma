@@ -181,3 +181,63 @@ model HostelDetails {
   @@unique([studentId, year])
 }
 
+model User {
+  id            String          @id @default(cuid())
+  name          String?
+  email         String          @unique
+  emailVerified DateTime?
+  image         String?
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  academicForms AcademicForm[]
+}
+
+model AcademicForm {
+  id                String   @id @default(cuid())
+  userId            String
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Personal Information
+  fullName          String
+  dateOfBirth       DateTime
+  gender            String
+  nationality       String
+  contactEmail      String
+  phoneNumber       String
+  
+  // Academic Background
+  highSchoolName    String
+  highSchoolGPA     Float
+  graduationYear    Int
+  
+  // Current Academic Status
+  currentInstitution String?
+  major              String?
+  minor              String?
+  currentGPA         Float?
+  expectedGraduation Int?
+  
+  // Academic Achievements
+  honors             String[]
+  scholarships       String[]
+  certifications     String[]
+  
+  // Research Experience
+  researchExperience Json?    // Stored as JSON array of research experiences
+  
+  // Extracurricular Activities
+  extracurriculars   Json?    // Stored as JSON array of activities
+  
+  // Additional Information
+  additionalInfo     String?
+  
+  // Form Status
+  status             String   @default("draft") // draft, submitted, approved, rejected
+  submittedAt        DateTime?
+  
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  @@index([userId])
+}
+

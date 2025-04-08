@@ -237,7 +237,7 @@ const MultiStepForm: React.FC = () => {
   return (
     <Box 
       width="100%" 
-      maxWidth="4xl" 
+      maxWidth="6xl" 
       mx="auto" 
       bg={bgColor} 
       borderRadius="lg" 

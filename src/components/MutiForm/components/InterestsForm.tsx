@@ -27,7 +27,7 @@ import { useFormik } from 'formik';
 import * as Yup from 'yup';
 
 const InterestsForm: React.FC = () => {
-  const { formData, updateFormData, nextStep } = useFormContext();
+  const { formData, updateFormData, nextStep, markStepAsCompleted } = useFormContext();
   const toast = useToast();
   const [newSkill, setNewSkill] = useState('');
 
@@ -66,12 +66,17 @@ const InterestsForm: React.FC = () => {
     validationSchema,
     onSubmit: (values) => {
       updateFormData(values);
+      
+      // Mark this step as completed
+      markStepAsCompleted(4);
+      
       toast({
         title: "Interests and skills saved",
         status: "success",
         duration: 2000,
         isClosable: true,
       });
+      
       nextStep();
     },
   });
@@ -101,8 +106,10 @@ const InterestsForm: React.FC = () => {
       boxShadow="md"
     >
       <VStack spacing={6} align="stretch">
-        <Heading size="md">Interests & Skills</Heading>
-        <Text color="gray.600">Tell us about your interests, skills, and career goals</Text>
+        <Box textAlign="center">
+          <Heading size="md" mb={2}>Interests & Skills</Heading>
+          <Text color="gray.600">Tell us about your interests, skills, and career goals</Text>
+        </Box>
 
         <form onSubmit={formik.handleSubmit}>
           <VStack spacing={6} align="stretch">

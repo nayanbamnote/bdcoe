@@ -19,16 +19,27 @@ import {
   Avatar,
   HStack,
   Tag,
-  TagLabel
+  TagLabel,
+  Table,
+  Thead,
+  Tr,
+  Th,
+  Tbody,
+  Td,
+  Badge
 } from '@chakra-ui/react';
 
 const ReviewForm: React.FC = () => {
-  const { formData, prevStep, submitForm } = useFormContext();
+  const { formData, prevStep, submitForm, markStepAsCompleted } = useFormContext();
   const toast = useToast();
 
   const handleSubmit = () => {
+    // Mark the review step as completed
+    markStepAsCompleted(6);
+    
     // Submit the entire form data
     submitForm();
+    
     toast({
       title: "Form submitted successfully!",
       description: "Thank you for completing the registration process.",
@@ -50,8 +61,10 @@ const ReviewForm: React.FC = () => {
       boxShadow="md"
     >
       <VStack spacing={6} align="stretch">
-        <Heading size="md">Review Your Information</Heading>
-        <Text color="gray.600">Please review all the information you've provided before submitting</Text>
+        <Box textAlign="center">
+          <Heading size="md" mb={2}>Review Your Information</Heading>
+          <Text color="gray.600">Please review all the information you've provided before submitting</Text>
+        </Box>
 
         <Accordion allowMultiple defaultIndex={[0]}>
           {/* Personal Details Section */}
@@ -135,6 +148,52 @@ const ReviewForm: React.FC = () => {
             </AccordionPanel>
           </AccordionItem>
 
+          {/* Academic History Section */}
+          <AccordionItem>
+            <h2>
+              <AccordionButton>
+                <Box flex="1" textAlign="left" fontWeight="bold">
+                  Academic History
+                </Box>
+                <AccordionIcon />
+              </AccordionButton>
+            </h2>
+            <AccordionPanel pb={4}>
+              {formData.semesterGrades && formData.semesterGrades.length > 0 ? (
+                <>
+                  <Table variant="simple" size="sm" mb={4}>
+                    <Thead bg="gray.50">
+                      <Tr>
+                        <Th>Semester</Th>
+                        <Th>Year</Th>
+                        <Th isNumeric>SGPA</Th>
+                        <Th isNumeric>Credits</Th>
+                      </Tr>
+                    </Thead>
+                    <Tbody>
+                      {formData.semesterGrades.map((grade, index) => (
+                        <Tr key={index}>
+                          <Td>{grade.semester}</Td>
+                          <Td>{grade.year}</Td>
+                          <Td isNumeric>{grade.sgpa}</Td>
+                          <Td isNumeric>{grade.credits}</Td>
+                        </Tr>
+                      ))}
+                    </Tbody>
+                  </Table>
+                  <HStack justify="flex-end" spacing={4}>
+                    <Text fontWeight="bold">CGPA:</Text>
+                    <Badge colorScheme="green" fontSize="md" px={3} py={1} borderRadius="md">
+                      {formData.cgpa}
+                    </Badge>
+                  </HStack>
+                </>
+              ) : (
+                <Text color="gray.500">No academic history provided</Text>
+              )}
+            </AccordionPanel>
+          </AccordionItem>
+
           {/* Family Details Section */}
           <AccordionItem>
             <h2>
@@ -175,6 +234,87 @@ const ReviewForm: React.FC = () => {
               <Text><strong>Name:</strong> {formData.emergencyContactName}</Text>
               <Text><strong>Contact:</strong> {formData.emergencyContactNumber}</Text>
               <Text><strong>Relation:</strong> {formData.emergencyContactRelation}</Text>
+            </AccordionPanel>
+          </AccordionItem>
+
+          {/* Scholarship & Hostel Section */}
+          <AccordionItem>
+            <h2>
+              <AccordionButton>
+                <Box flex="1" textAlign="left" fontWeight="bold">
+                  Scholarship & Hostel Details
+                </Box>
+                <AccordionIcon />
+              </AccordionButton>
+            </h2>
+            <AccordionPanel pb={4}>
+              <VStack align="flex-start" spacing={6} width="100%">
+                {/* Scholarship Information */}
+                <Box width="100%">
+                  <Heading size="sm" mb={3}>Scholarship Information</Heading>
+                  {formData.hasScholarship ? (
+                    <Grid templateColumns={{ base: "1fr", md: "repeat(2, 1fr)" }} gap={4}>
+                      <GridItem>
+                        <Text><strong>Type:</strong> {formData.scholarshipType}</Text>
+                      </GridItem>
+                      <GridItem>
+                        <Text><strong>Amount:</strong> ₹{formData.scholarshipAmount}</Text>
+                      </GridItem>
+                      <GridItem>
+                        <Text><strong>Provider:</strong> {formData.scholarshipProvider}</Text>
+                      </GridItem>
+                      <GridItem>
+                        <Text><strong>Duration:</strong> {formData.scholarshipDuration}</Text>
+                      </GridItem>
+                      {formData.scholarshipDetails && (
+                        <GridItem colSpan={{ base: 1, md: 2 }}>
+                          <Text><strong>Additional Details:</strong> {formData.scholarshipDetails}</Text>
+                        </GridItem>
+                      )}
+                    </Grid>
+                  ) : (
+                    <Text color="gray.500">No scholarship</Text>
+                  )}
+                </Box>
+
+                <Divider />
+
+                {/* Hostel Information */}
+                <Box width="100%">
+                  <Heading size="sm" mb={3}>Hostel Information</Heading>
+                  {formData.isHosteler ? (
+                    <Grid templateColumns={{ base: "1fr", md: "repeat(2, 1fr)" }} gap={4}>
+                      <GridItem>
+                        <Text><strong>Hostel Name:</strong> {formData.hostelName}</Text>
+                      </GridItem>
+                      <GridItem>
+                        <Text><strong>Room Number:</strong> {formData.roomNumber}</Text>
+                      </GridItem>
+                      <GridItem>
+                        <Text><strong>Room Type:</strong> {formData.roomType}</Text>
+                      </GridItem>
+                      <GridItem>
+                        <Text><strong>Hostel Fees:</strong> ₹{formData.hostelFees}/year</Text>
+                      </GridItem>
+                      <GridItem>
+                        <Text><strong>Distance from Home:</strong> {formData.distanceFromHome} km</Text>
+                      </GridItem>
+                      {formData.wardenContact && (
+                        <GridItem>
+                          <Text><strong>Warden Contact:</strong> {formData.wardenContact}</Text>
+                        </GridItem>
+                      )}
+                      {formData.hostelAddress && (
+                        <GridItem colSpan={{ base: 1, md: 2 }}>
+                          <Text><strong>Hostel Address:</strong> {formData.hostelAddress}</Text>
+                        </GridItem>
+                      )}
+                    </Grid>
+                  ) : (
+                    <Text color="gray.500">Not staying in hostel</Text>
+                  )}
+                </Box>
+              </VStack>
             </AccordionPanel>
           </AccordionItem>
 

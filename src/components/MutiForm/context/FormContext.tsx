@@ -2,145 +2,177 @@
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 
 // Define the shape of our form data
-export interface FormData {
-  // Personal Details
-  name?: string;
-  fullName?: string;
-  dob?: string;
-  dateOfBirth?: string;
-  contact?: string;
-  contactNumber?: string;
-  email?: string;
-  address?: string;
-  currentAddress?: string;
-  aadharNumber?: string;
-  bloodGroup?: string;
-  aadharAddress?: string;
-  permanentAddress?: string;
-  casteCategory?: string;
-  subcaste?: string;
-  religion?: string;
-  profilePhoto?: File | null;
+interface AcademicFormData {
+  // Personal Information
+  fullName: string;
+  dateOfBirth: string;
+  gender: string;
+  nationality: string;
+  contactEmail: string;
+  phoneNumber: string;
   
-  // Education Details
-  highestQualification?: string;
-  university?: string;
-  yearOfPassing?: string | number;
-  percentage?: string | number;
+  // Academic Background
+  highSchoolName: string;
+  highSchoolGPA: number;
+  graduationYear: number;
+  
+  // Current Academic Status
   currentInstitution?: string;
-  currentCourse?: string;
-  currentYear?: string;
+  major?: string;
+  minor?: string;
+  currentGPA?: number;
+  expectedGraduation?: number;
   
-  // Family Details
-  fatherName?: string;
-  fatherOccupation?: string;
-  fatherContact?: string;
-  motherName?: string;
-  motherOccupation?: string;
-  motherContact?: string;
-  hasSiblings?: boolean;
-  siblingName?: string;
-  siblingAge?: string | number;
-  emergencyContactName?: string;
-  emergencyContactNumber?: string;
-  emergencyContactRelation?: string;
+  // Academic Achievements
+  honors: string[];
+  scholarships: string[];
+  certifications: string[];
   
-  // Interests & Skills
-  technicalInterests?: string[];
-  skills?: string[];
-  hobbies?: string;
-  achievements?: string;
-  careerGoals?: string;
+  // Research Experience
+  researchExperience: Array<{
+    title: string;
+    institution: string;
+    startDate: string;
+    endDate?: string;
+    description: string;
+  }>;
+  
+  // Extracurricular Activities
+  extracurriculars: Array<{
+    activity: string;
+    role: string;
+    startDate: string;
+    endDate?: string;
+    description: string;
+  }>;
+  
+  // Additional Information
+  additionalInfo?: string;
 }
 
-// Define the shape of our context
 interface FormContextType {
-  formData: FormData;
-  currentStep: number;
-  totalSteps: number;
-  updateFormData: (data: Partial<FormData>) => void;
-  nextStep: () => void;
-  prevStep: () => void;
-  goToStep: (step: number) => void;
-  resetForm: () => void;
-  submitForm: () => void;
+  formData: AcademicFormData;
+  updateFormData: (newData: Partial<AcademicFormData>) => void;
+  validateStep: (step: number) => boolean;
+  errors: Record<string, string>;
+  setErrors: React.Dispatch<React.SetStateAction<Record<string, string>>>;
 }
 
-// Create the context with default values
-const FormContext = createContext<FormContextType>({
-  formData: {},
-  currentStep: 0,
-  totalSteps: 5,
-  updateFormData: () => {},
-  nextStep: () => {},
-  prevStep: () => {},
-  goToStep: () => {},
-  resetForm: () => {},
-  submitForm: () => {},
-});
+const defaultFormData: AcademicFormData = {
+  // Personal Information
+  fullName: '',
+  dateOfBirth: '',
+  gender: '',
+  nationality: '',
+  contactEmail: '',
+  phoneNumber: '',
+  
+  // Academic Background
+  highSchoolName: '',
+  highSchoolGPA: 0,
+  graduationYear: new Date().getFullYear(),
+  
+  // Academic Achievements
+  honors: [],
+  scholarships: [],
+  certifications: [],
+  
+  // Research Experience
+  researchExperience: [],
+  
+  // Extracurricular Activities
+  extracurriculars: [],
+};
 
-// Create a provider component
-interface FormProviderProps {
-  children: ReactNode;
-}
+const FormContext = createContext<FormContextType | undefined>(undefined);
 
-export const FormProvider: React.FC<FormProviderProps> = ({ children }) => {
-  const [formData, setFormData] = useState<FormData>({});
-  const [currentStep, setCurrentStep] = useState(0);
-  const totalSteps = 5; // Total number of steps in the form
+export const FormProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  const [formData, setFormData] = useState<AcademicFormData>(defaultFormData);
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
-  const updateFormData = (data: Partial<FormData>) => {
-    setFormData(prevData => ({ ...prevData, ...data }));
+  const updateFormData = (newData: Partial<AcademicFormData>) => {
+    setFormData(prevData => ({
+      ...prevData,
+      ...newData,
+    }));
   };
 
-  const nextStep = () => {
-    if (currentStep < totalSteps - 1) {
-      setCurrentStep(prevStep => prevStep + 1);
+  // Validation logic for each step
+  const validateStep = (step: number): boolean => {
+    const newErrors: Record<string, string> = {};
+    let isValid = true;
+
+    // Step 0: Personal Information
+    if (step === 0) {
+      if (!formData.fullName) {
+        newErrors.fullName = 'Full name is required';
+        isValid = false;
+      }
+      
+      if (!formData.dateOfBirth) {
+        newErrors.dateOfBirth = 'Date of birth is required';
+        isValid = false;
+      }
+      
+      if (!formData.gender) {
+        newErrors.gender = 'Gender is required';
+        isValid = false;
+      }
+      
+      if (!formData.nationality) {
+        newErrors.nationality = 'Nationality is required';
+        isValid = false;
+      }
+      
+      if (!formData.contactEmail) {
+        newErrors.contactEmail = 'Email is required';
+        isValid = false;
+      } else if (!/\S+@\S+\.\S+/.test(formData.contactEmail)) {
+        newErrors.contactEmail = 'Email is invalid';
+        isValid = false;
+      }
+      
+      if (!formData.phoneNumber) {
+        newErrors.phoneNumber = 'Phone number is required';
+        isValid = false;
+      }
     }
-  };
-
-  const prevStep = () => {
-    if (currentStep > 0) {
-      setCurrentStep(prevStep => prevStep - 1);
+    
+    // Step 1: Academic Background
+    else if (step === 1) {
+      if (!formData.highSchoolName) {
+        newErrors.highSchoolName = 'High school name is required';
+        isValid = false;
+      }
+      
+      if (formData.highSchoolGPA < 0 || formData.highSchoolGPA > 4.0) {
+        newErrors.highSchoolGPA = 'GPA must be between 0 and 4.0';
+        isValid = false;
+      }
+      
+      if (!formData.graduationYear || formData.graduationYear < 1900 || formData.graduationYear > 2100) {
+        newErrors.graduationYear = 'Please enter a valid graduation year';
+        isValid = false;
+      }
     }
-  };
+    
+    // Add validation for other steps as needed
 
-  const goToStep = (step: number) => {
-    if (step >= 0 && step < totalSteps) {
-      setCurrentStep(step);
-    }
-  };
-
-  const resetForm = () => {
-    setFormData({});
-    setCurrentStep(0);
-  };
-
-  const submitForm = () => {
-    // Here you would typically send the form data to your backend
-    console.log('Form submitted:', formData);
-    // After successful submission, you might want to reset the form
-    // resetForm();
+    setErrors(newErrors);
+    return isValid;
   };
 
   return (
-    <FormContext.Provider
-      value={{
-        formData,
-        currentStep,
-        totalSteps,
-        updateFormData,
-        nextStep,
-        prevStep,
-        goToStep,
-        resetForm,
-        submitForm,
-      }}
-    >
+    <FormContext.Provider value={{ formData, updateFormData, validateStep, errors, setErrors }}>
       {children}
     </FormContext.Provider>
   );
 };
 
-// Create a custom hook to use the form context
-export const useFormContext = () => useContext(FormContext); 
+export const useFormContext = () => {
+  const context = useContext(FormContext);
+  if (context === undefined) {
+    throw new Error('useFormContext must be used within a FormProvider');
+  }
+  return context;
+}; 
