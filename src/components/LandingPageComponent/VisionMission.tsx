@@ -1,8 +1,9 @@
 import React from "react";
-import { Eye, Target, GraduationCap, Handshake, LucideIcon } from "lucide-react";
+import { Eye, Target, GraduationCap, Handshake } from "lucide-react";
+import { motion } from "framer-motion";
 
 interface VisionItem {
-  Icon: LucideIcon;
+  Icon: React.FC<{ size?: number }>; // Correct type for Lucide icons
   iconSize: number;
   title: string;
   description: string;
@@ -19,7 +20,7 @@ const visionData: VisionItem[] = [
     Icon: Target,
     iconSize: 50,
     title: "Mission",
-    description: "Networking and cooperation with global organizations by creating suitable environment in campus..."
+    description: "Networking and cooperation with global organizations by creating a suitable environment in campus..."
   },
   {
     Icon: GraduationCap,
@@ -35,10 +36,11 @@ const visionData: VisionItem[] = [
   }
 ];
 
-// ... existing imports and interfaces ...
-
 const VisionCard: React.FC<VisionItem> = ({ Icon, iconSize, title, description }) => (
-  <div className="flex flex-col items-center text-center p-4 border rounded-lg shadow-lg min-h-[234px] w-[280px]">
+  <motion.div 
+    className="flex flex-col items-center text-center p-4 border rounded-lg shadow-lg min-h-[234px] w-[280px]"
+    whileHover={{ scale: 1.05 }} // Simple hover effect
+  >
     <div className="text-[#3eb2ce] mb-4">
       <Icon size={iconSize} />
     </div>
@@ -46,7 +48,7 @@ const VisionCard: React.FC<VisionItem> = ({ Icon, iconSize, title, description }
     <p className="text-base text-gray-600">
       {description}
     </p>
-  </div>
+  </motion.div>
 );
 
 const VisionMission: React.FC = () => {
@@ -59,7 +61,4 @@ const VisionMission: React.FC = () => {
   );
 };
 
-
-// ... existing export ...
-
-export default VisionMission; 
+export default VisionMission;
