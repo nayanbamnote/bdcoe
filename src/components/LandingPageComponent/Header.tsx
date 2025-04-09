@@ -100,7 +100,7 @@ const Header: React.FC = () => {
     },
     {
       label: "Profile",
-      href: "/profile",
+      href: "/newprofile",
       icon: <User className="h-[16px] w-[16px]" />,
     },
   ];

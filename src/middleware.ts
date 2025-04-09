@@ -4,7 +4,8 @@ const isPublicRoute = createRouteMatcher([
   '/sign-in(.*)', 
   '/sign-up(.*)', 
   '/',
-  '/api/edgestore/(.*)'
+  '/api/edgestore/(.*)',
+  '/api/profile-complete(.*)'  // Add profile-complete API to public routes for testing
 ])
 
 export default clerkMiddleware(async (auth, request) => {

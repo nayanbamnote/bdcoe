@@ -10,10 +10,10 @@ const config: Config = {
   theme: {
   	extend: {
   		colors: {
-  			black33: '#333333',
-  			main: '#3eb2ce',
-  			grayee: '#eeeeee',
-  			gray66: '#666666',
+			black33: '#333333',
+			main: '#3eb2ce',
+			grayee: '#eeeeee',
+			gray66: '#666666',
   			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',
   			card: {
@@ -54,30 +54,20 @@ const config: Config = {
   				'4': 'hsl(var(--chart-4))',
   				'5': 'hsl(var(--chart-5))'
   			},
-  			sidebar: {
-  				DEFAULT: 'hsl(var(--sidebar-background))',
-  				foreground: 'hsl(var(--sidebar-foreground))',
-  				primary: 'hsl(var(--sidebar-primary))',
-  				'primary-foreground': 'hsl(var(--sidebar-primary-foreground))',
-  				accent: 'hsl(var(--sidebar-accent))',
-  				'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
-  				border: 'hsl(var(--sidebar-border))',
-  				ring: 'hsl(var(--sidebar-ring))'
-  			}
   		},
   		borderRadius: {
   			lg: 'var(--radius)',
   			md: 'calc(var(--radius) - 2px)',
   			sm: 'calc(var(--radius) - 4px)'
   		},
-  		width: {
-  			info: '940px'
-  		},
-  		fontSize: {
-  			sm: '12px',
-  			base: '14px',
-  			xl: '28px'
-  		}
+		  width: {
+			  info: '940px',
+		  },
+		  fontSize: {
+			sm: '12px',
+			base: '14px',
+			xl: '28px',
+		},
   	}
   },
   plugins: [require("tailwindcss-animate")],

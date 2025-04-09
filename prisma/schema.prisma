@@ -27,6 +27,65 @@ model Student {
   hostel           Hostel?
   scholarshipDetails ScholarshipDetails[]
   hostelDetails   HostelDetails[]
+  profileComplete   ProfileComplete?
+}
+
+// New model to store all form data from the multi-step profile form
+model ProfileComplete {
+  id                Int      @id @default(autoincrement())
+  student           Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  studentId         Int      @unique
+  
+  // Personal Info
+  name              String
+  email             String
+  phone             String
+  location          String
+  imageUrl          String?
+  
+  // Academic Info
+  college_id        String
+  rollNumber        String
+  currentSemester   String
+  section           String
+  yearOfAdmission   String
+  
+  // Additional Details
+  aadharNo          String
+  dob               String
+  bloodGroup        String?
+  addressOnAadhar   String
+  permanentAddress  String?
+  casteCategory     String
+  subcaste          String?
+  religion          String
+  
+  // Guardian Details
+  fatherName        String
+  fatherOccupation  String?
+  fatherQualification String?
+  fatherContact     String
+  motherName        String
+  motherOccupation  String?
+  motherQualification String?
+  motherContact     String
+  
+  // Siblings as JSON string
+  siblings          String?
+  
+  // Interests as JSON string
+  interests         String?
+  
+  // Academic History as JSON string
+  academicHistory   String?
+  
+  // Accommodation Details
+  isHosteler        Boolean  @default(false)
+  hasScholarship    Boolean  @default(false)
+  accommodationDetails String?
+  
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
 }
 
 model StudentProfile {
@@ -59,7 +118,7 @@ model AdditionalStudentDetails {
   id               Int      @id @default(autoincrement())
   student          Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
   studentId        Int      @unique
-  aadharNo         String   @unique
+  aadharNo         String   
   dob              DateTime
   bloodGroup       String?
   addressOnAadhar  String
@@ -69,6 +128,8 @@ model AdditionalStudentDetails {
   religion         String
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
+
+  @@unique([studentId, aadharNo])
 }
 
 model SiblingDetails {
@@ -179,5 +240,108 @@ model HostelDetails {
   updatedAt       DateTime @updatedAt
 
   @@unique([studentId, year])
+}
+
+model Profile {
+  id              String    @id @default(cuid())
+  userId          String    @unique
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  // Personal Info
+  firstName       String
+  lastName        String
+  email          String
+  phone          String?
+  dateOfBirth    DateTime?
+  gender         String?
+  address        String?
+
+  // Academic Info
+  academic       Academic?
+  
+  // Additional Details
+  additional     AdditionalDetails?
+  
+  // Guardian Details
+  guardian       GuardianDetails?
+  
+  // Siblings Details
+  siblings       SiblingsDetails?
+  
+  // Interests
+  interests      Interests?
+  
+  // Academic History
+  academicHistory AcademicHistory?
+  
+  // Accommodation
+  accommodation   Accommodation?
+}
+
+model Academic {
+  id            String   @id @default(cuid())
+  profile       Profile  @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  profileId     String   @unique
+  course        String
+  branch        String
+  year          Int
+  semester      Int
+  rollNumber    String?
+}
+
+model AdditionalDetails {
+  id            String   @id @default(cuid())
+  profile       Profile  @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  profileId     String   @unique
+  bloodGroup    String?
+  category      String?
+  nationality   String?
+  religion      String?
+}
+
+model GuardianDetails {
+  id            String   @id @default(cuid())
+  profile       Profile  @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  profileId     String   @unique
+  fatherName    String?
+  fatherOccupation String?
+  fatherPhone   String?
+  motherName    String?
+  motherOccupation String?
+  motherPhone   String?
+}
+
+model SiblingsDetails {
+  id            String   @id @default(cuid())
+  profile       Profile  @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  profileId     String   @unique
+  siblings      Json?    // Array of sibling information
+}
+
+model Interests {
+  id            String   @id @default(cuid())
+  profile       Profile  @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  profileId     String   @unique
+  hobbies       Json?    // Array of hobbies
+  skills        Json?    // Array of skills
+  languages     Json?    // Array of languages known
+}
+
+model AcademicHistory {
+  id            String   @id @default(cuid())
+  profile       Profile  @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  profileId     String   @unique
+  education     Json?    // Array of education history
+}
+
+model Accommodation {
+  id            String   @id @default(cuid())
+  profile       Profile  @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  profileId     String   @unique
+  hostelName    String?
+  roomNumber    String?
+  roomType      String?
+  preferredRoommate String?
 }
 
