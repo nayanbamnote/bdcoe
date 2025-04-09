@@ -1,9 +1,9 @@
 import React from "react";
-import { Eye, Target, GraduationCap, Handshake } from "lucide-react";
+import { Eye, Target, GraduationCap, Handshake, LucideIcon } from "lucide-react";
 import { motion } from "framer-motion";
 
 interface VisionItem {
-  Icon: React.FC<{ size?: number }>; // Correct type for Lucide icons
+  Icon: LucideIcon;
   iconSize: number;
   title: string;
   description: string;
